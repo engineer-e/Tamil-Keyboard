@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="ta" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>தமிழ் Generative Jewel Keyboard</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Noto Sans Tamil, Mukta Malar & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;700;800&family=Noto+Sans+Tamil:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .font-tamil {
+      font-family: 'Noto Sans Tamil', 'Mukta Malar', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    .font-tamil-title {
+      font-family: 'Mukta Malar', 'Noto Sans Tamil', sans-serif !important;
+    }
+    .font-sans-custom {
+      font-family: 'Space Grotesk', sans-serif !important;
+    }
+    
+    /* Smooth transitions for luxury tactile experience */
+    .theme-transition {
+      transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                  border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                  box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Gemstone shine animation */
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+    .gem-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .gem-shine::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+      transform: rotate(45deg);
+      transition: all 0.5s ease;
+    }
+    .gem-shine:hover::after {
+      animation: shine 1.2s ease-in-out infinite;
+    }
+
+    /* Premium scrollbar styling */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(217, 119, 6, 0.3);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="theme-transition min-h-screen font-tamil select-none overflow-x-hidden">
+
+  <!-- Core Wrapper Container -->
+  <div id="appContainer" class="min-h-screen p-3 md:p-6 flex flex-col justify-between theme-transition">
+    
+    <!-- Top Header / Jewel Branding -->
+    <header class="max-w-7xl w-full mx-auto mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b pb-4 border-emerald-900/40">
+      <div class="flex items-center gap-3">
+        <!-- Brand Shield Icon -->
+        <div class="p-3 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl border border-amber-300/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+          <i data-lucide="gem" class="w-6 h-6 text-emerald-950"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2 font-tamil-title">
+            தமிழ் <span class="bg-gradient-to-r from-amber-400 via-yellow-200 to-emerald-400 bg-clip-text text-transparent font-sans-custom font-semibold">Generative Keyboard</span>
+          </h1>
+          <p class="text-xs text-emerald-300/60 font-sans-custom">Faceted Jewel Phonology Engine • Inspired by Sacred Brooch Art</p>
+        </div>
+      </div>
+
+      <!-- Global Controls / Jewel Themes Selector -->
+      <div class="flex flex-wrap items-center gap-2 font-sans-custom">
+        <!-- Audio Keystroke Feedback Toggle -->
+        <button 
+          id="soundToggleBtn"
+          class="p-2.5 rounded-xl border text-xs flex items-center gap-1.5 transition-all bg-emerald-950/40 text-emerald-400 border-emerald-500/20 hover:border-emerald-400"
+          title="ஒலி நிலை"
+        >
+          <i data-lucide="bell" class="w-4 h-4 text-amber-400 animate-pulse"></i>
+          <span id="soundText" class="hidden md:inline font-semibold">ஒலி இயக்கம் (Chimes On)</span>
+        </button>
+
+        <!-- Theme Selector Group -->
+        <div class="flex items-center bg-black/40 p-1 rounded-xl border border-emerald-900/60" id="themeGroup">
+          <button 
+            id="themeEmeraldBtn"
+            class="px-3 py-1.5 text-xs rounded-lg transition-all bg-gradient-to-r from-emerald-800 to-emerald-950 text-emerald-300 border border-emerald-500/30 font-medium"
+          >
+            மரகதம் (Emerald)
+          </button>
+          <button 
+            id="themeSapphireBtn"
+            class="px-3 py-1.5 text-xs rounded-lg transition-all text-blue-400 hover:text-blue-200"
+          >
+            நீலம் (Sapphire)
+          </button>
+          <button 
+            id="themeRubyBtn"
+            class="px-3 py-1.5 text-xs rounded-lg transition-all text-red-400 hover:text-red-200"
+          >
+            மாணிக்கம் (Ruby)
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-grow">
+      
+      <!-- LEFT PANEL: Editor Canvas & Guide Info -->
+      <section class="lg:col-span-5 flex flex-col gap-4">
+        
+        <!-- Textarea Editor Canvas with Jewel-Themed Border -->
+        <div id="editorPanel" class="p-5 rounded-3xl border transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col theme-transition">
+          
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400/80 flex items-center gap-1.5 font-sans-custom">
+              <i data-lucide="feather" class="w-4 h-4 text-amber-400"></i> தட்டச்சுப் பலகை (Jewelled Canvas)
+            </span>
+            <div class="flex items-center gap-1.5 font-sans-custom">
+              <button 
+                id="fontMinusBtn"
+                class="p-2 bg-black/20 hover:bg-black/40 rounded-lg text-amber-400/80 hover:text-amber-300 transition-colors border border-amber-500/10"
+                title="எழுத்துரு அளவைக் குறை"
+              >
+                <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+              </button>
+              <span id="fontSizeDisplay" class="text-xs font-mono font-bold text-amber-400 px-1 bg-black/30 rounded-md">28px</span>
+              <button 
+                id="fontPlusBtn"
+                class="p-2 bg-black/20 hover:bg-black/40 rounded-lg text-amber-400/80 hover:text-amber-300 transition-colors border border-amber-500/10"
+                title="எழுத்துரு அளவைக் கூட்டு"
+              >
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Text Entry Input area -->
+          <textarea
+            id="tamilTextarea"
+            style="font-size: 28px;"
+            placeholder="விசைப்பலகையைத் தட்டவும்... சக்கரத்தில் முதலில் ஒரு மெய்யெழுத்தையும் (க்), பின்னர் ஓர் உயிரெழுத்தையும் (ஆ) அழுத்தினால் அது தானாகவே உயிர்மெய் எழுத்தாக (கா) மாறும்!"
+            class="w-full h-56 bg-black/10 rounded-2xl p-4 outline-none border border-emerald-950/50 resize-none font-tamil leading-relaxed tracking-wide placeholder-emerald-800/60 custom-scroll transition-all focus:border-amber-500/30 focus:bg-black/20"
+          ></textarea>
+
+          <!-- Canvas Toolbar Buttons -->
+          <div class="flex flex-wrap items-center justify-between pt-4 mt-2 border-t border-emerald-950/40 gap-2 font-sans-custom">
+            
+            <div class="flex items-center gap-1">
+              <button 
+                id="undoBtn"
+                disabled
+                class="p-2.5 rounded-xl flex items-center gap-1.5 text-xs transition-all text-neutral-600 cursor-not-allowed border border-transparent"
+                title="முந்தைய செயல் (Undo)"
+              >
+                <i data-lucide="undo-2" class="w-4 h-4"></i> பின்செல் (Undo)
+              </button>
+              <button 
+                id="clearBtn"
+                class="p-2.5 rounded-xl text-neutral-400 hover:bg-red-500/10 hover:text-red-400 border border-transparent hover:border-red-500/20 flex items-center gap-1.5 text-xs transition-all"
+                title="அனைத்தும் நீக்கு"
+              >
+                <i data-lucide="trash-2" class="w-4 h-4"></i> அழி (Clear)
+              </button>
+              <button 
+                id="backspaceBtn"
+                disabled
+                class="p-2.5 rounded-xl flex items-center gap-1.5 text-xs transition-all text-neutral-600 cursor-not-allowed border border-transparent"
+                title="ஒரு எழுத்து நீக்கு (Backspace)"
+              >
+                <i data-lucide="delete" class="w-4 h-4"></i> பின்அழி
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <button 
+                id="speakBtn"
+                disabled
+                class="px-3.5 py-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold transition-all bg-neutral-900 text-neutral-500 border border-neutral-800 cursor-not-allowed"
+              >
+                <i data-lucide="volume-2" class="w-4 h-4"></i> ஒலிப்பவை (Speak)
+              </button>
+              <button 
+                id="copyBtn"
+                class="px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-emerald-950 shadow-[0_4px_15px_rgba(245,158,11,0.3)] hover:scale-[1.03]"
+              >
+                <i data-lucide="copy" class="w-4 h-4"></i> பிரதியெடு (Copy)
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Jewel Formulation Guidelines Panel -->
+        <div id="rulesPanel" class="p-5 rounded-3xl border transition-all theme-transition shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
+          <h3 class="text-sm font-bold text-amber-400 mb-2 font-tamil-title flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            💡 தமிழ் உயிர்மெய் உருவாக்க விதிமுறை
+          </h3>
+          <p class="text-xs text-neutral-400 leading-relaxed font-sans-custom">
+            உயிர்மெய் எழுத்துக்கள் தனித்தனியாக விசைகளில் இருக்க வேண்டியதில்லை. தமிழ் எழுத்துக்கள் எவ்வாறு உடலும் ஆவியும் இணைந்து பிறக்கின்றனவோ அதே போல விசைப்பலகை செயல்படுகிறது:
+          </p>
+          <div class="mt-3 space-y-1.5 text-xs font-mono text-amber-300 bg-black/40 p-3 rounded-xl border border-amber-500/10">
+            <div class="flex justify-between items-center">
+              <span>1. மெய் அழுத்தவும்:</span> 
+              <span class="font-bold font-tamil px-2 py-0.5 bg-emerald-950/50 rounded-lg border border-emerald-500/20 text-emerald-300">க்</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>2. உயிர் அழுத்தவும்:</span> 
+              <span class="font-bold font-tamil px-2 py-0.5 bg-emerald-950/50 rounded-lg border border-emerald-500/20 text-emerald-300">இ</span>
+            </div>
+            <div class="flex justify-between border-t border-emerald-950/60 pt-2 mt-2 font-bold items-center">
+              <span>விளைவு (உயிர்மெய்):</span> 
+              <span class="text-amber-400 text-base font-tamil px-2 py-0.5 bg-amber-500/10 rounded-lg border border-amber-500/20">கி</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT PANEL: Visual Jewel Wheel & Interactive Guides -->
+      <section class="lg:col-span-7 flex flex-col gap-4">
+        
+        <!-- Interactive Tab Selectors -->
+        <nav class="flex bg-black/30 p-1.5 rounded-2xl border border-emerald-950/50 gap-1.5 font-sans-custom">
+          <button
+            id="tabDiagramBtn"
+            class="flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-amber-500 to-amber-600 text-emerald-950 shadow-[0_4px_15px_rgba(245,158,11,0.2)]"
+          >
+            <i data-lucide="crown" class="w-4 h-4"></i>
+            மரகத விசைப்பலகை (The Jewel Brooch Board)
+          </button>
+          <button
+            id="tabGuideBtn"
+            class="flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all text-neutral-400 hover:text-neutral-200 hover:bg-white/5"
+          >
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            இலக்கண விதிமுறை (Phonetics Guide)
+          </button>
+        </nav>
+
+        <!-- Dynamic Content Area -->
+        <div id="tabContentContainer" class="relative">
+          
+          <!-- View 1: Keyboard SVG Wheel (Beautiful Emerald/Gold Theme) -->
+          <div id="diagramView" class="p-4 rounded-3xl border transition-all flex flex-col items-center relative theme-transition shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
+            
+            <!-- Controls Inside Board -->
+            <div class="absolute top-4 left-4 z-10 flex items-center gap-2 font-sans-custom">
+              <button
+                id="toggleGeometryLinesBtn"
+                class="p-2 rounded-xl text-xs flex items-center gap-1.5 border transition-all bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-400"
+              >
+                <i data-lucide="eye" id="toggleLinesIcon" class="w-4 h-4"></i>
+                <span id="toggleLinesText">வடிவியல் வரிகள் இயக்கம்</span>
+              </button>
+            </div>
+
+            <!-- Ayutha Ezhuthu Special Node placement -->
+            <div class="absolute top-4 right-4 z-10">
+              <button
+                id="specialCharBtn"
+                class="p-3 bg-gradient-to-b from-[#111] to-[#050505] hover:to-[#1a1a1a] border-2 border-amber-500/40 hover:border-amber-400 text-amber-400 font-extrabold text-xl rounded-2xl transition-all shadow-[0_5px_15px_rgba(0,0,0,0.4)] flex flex-col items-center gap-1.5 group hover:scale-105"
+                data-char="ஃ"
+              >
+                <div class="flex gap-1 justify-center items-center">
+                  <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow-[0_0_5px_rgba(245,158,11,0.6)]"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow-[0_0_5px_rgba(245,158,11,0.6)]"></span>
+                </div>
+                <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 shadow-[0_0_5px_rgba(245,158,11,0.6)]"></span>
+                <span class="text-[9px] font-bold tracking-widest text-amber-400/80 group-hover:text-amber-300 font-tamil-title">ஆய்தம் ஃ</span>
+              </button>
+            </div>
+
+            <!-- Responsive Interactive SVG Space -->
+            <div class="w-full max-w-[580px] aspect-square relative select-none mt-16 md:mt-6">
+              <svg
+                id="keyboardSvg"
+                viewBox="0 0 1000 1000"
+                class="w-full h-full"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <!-- SVG Defs (Gradients and Glow filters adapted to emerald brooch image_e062ff.jpg) -->
+                <defs>
+                  <!-- Premium Radial gold-shimmer gradient -->
+                  <radialGradient id="goldGradient" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+                    <stop offset="0%" stop-color="#fffbeb" />
+                    <stop offset="25%" stop-color="#f59e0b" />
+                    <stop offset="70%" stop-color="#d97706" />
+                    <stop offset="100%" stop-color="#78350f" />
+                  </radialGradient>
+
+                  <!-- Dynamic Gemstone Gradient definitions will be adjusted via Javascript. Here are initial fallbacks. -->
+                  <radialGradient id="gemGradient" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#a7f3d0" />
+                    <stop offset="40%" stop-color="#059669" />
+                    <stop offset="85%" stop-color="#064e3b" />
+                    <stop offset="100%" stop-color="#022c22" />
+                  </radialGradient>
+
+                  <!-- Gold Hub center glow -->
+                  <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.15" />
+                    <stop offset="100%" stop-color="#064e3b" stop-opacity="0" />
+                  </radialGradient>
+
+                  <!-- Gold Metallic Line Linear Gradient -->
+                  <linearGradient id="goldLine" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#d97706" />
+                    <stop offset="50%" stop-color="#fbbf24" />
+                    <stop offset="100%" stop-color="#78350f" />
+                  </linearGradient>
+
+                  <!-- Shadow filter for high-fidelity 3D depth -->
+                  <filter id="shadow">
+                    <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.6" />
+                  </filter>
+                </defs>
+
+                <!-- Sacred Geometry SVG Elements render here -->
+              </svg>
+            </div>
+
+            <!-- Legend/Guidelines panel -->
+            <div class="w-full flex flex-wrap justify-between items-center px-4 mt-4 text-[11px] text-neutral-400 border-t border-emerald-950/40 pt-3 font-tamil-title gap-2">
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-red-600 border border-amber-500/50 inline-block shadow-[0_0_5px_rgba(220,38,38,0.5)]"></span> 
+                வல்லினம் (Hard Plosives)
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-600 border border-amber-500/50 inline-block shadow-[0_0_5px_rgba(16,185,129,0.5)]"></span> 
+                மெல்லினம் (Soft Nasals)
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-blue-600 border border-amber-500/50 inline-block shadow-[0_0_5px_rgba(37,99,235,0.5)]"></span> 
+                இடையினம் (Medium Approximants)
+              </span>
+            </div>
+
+          </div>
+
+          <!-- View 2: Phonetics Guide View -->
+          <div id="guideView" class="hidden p-6 rounded-3xl border transition-all leading-relaxed theme-transition shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
+            <h2 class="text-xl font-bold text-amber-400 mb-3 flex items-center gap-2 font-tamil-title">
+              <i data-lucide="book-open" class="w-5 h-5 text-amber-500"></i> தமிழ் உயிர்மெய் எழுத்துக்களின் தத்துவம்
+            </h2>
+            <div class="space-y-4 text-sm text-neutral-300 font-sans-custom">
+              <p>
+                தமிழ் இலக்கணத்தில் மெய்யெழுத்துக்கள் உடலைப் போன்றது, உயிரெழுத்துக்கள் ஆன்மாவை போன்றது. உடலும் உயிரும் இணையும்போது பிறப்பதே உயிர்மெய் எழுத்துக்கள்.
+              </p>
+
+              <div class="p-4 bg-emerald-950/20 rounded-2xl border border-emerald-500/20 text-neutral-300">
+                <h3 class="font-bold text-amber-400 mb-1 font-tamil-title flex items-center gap-2">📐 வடிவியல் அமைப்பு மற்றும் இயக்கம்:</h3>
+                <p class="text-neutral-400 text-xs">
+                  இந்த வடிவமைப்பில், சக்கரத்தின் நடுவில் இருக்கும் 18 மெய்யெழுத்துகளில் ஏதேனும் ஒன்றை அழுத்திவிட்டு, பின் வெளிப்புற வட்டத்தில் உள்ள 12 உயிரெழுத்துக்களில் ஒன்றை அழுத்தும்போது அவை உடனடியாக தங்களுக்குள் புள்ளி அழிந்து உயிர்மெய்யாக ஒன்றிணைந்துவிடும்.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-2 font-tamil text-xs">
+                <div class="p-3 bg-red-950/20 rounded-xl border border-red-500/20">
+                  <h3 class="font-bold text-red-400 mb-1 font-tamil-title text-sm">வல்லினம் (6 மெய்கள்)</h3>
+                  <p class="text-neutral-400">வலிய ஓசையுடையது (நெஞ்சுப் பகுதியில் பிறப்பவை): க், ச், ட், த், ப், ற்.</p>
+                </div>
+                <div class="p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/20">
+                  <h3 class="font-bold text-emerald-400 mb-1 font-tamil-title text-sm">மெல்லினம் (6 மெய்கள்)</h3>
+                  <p class="text-neutral-400">மெல்லிய ஓசையுடையது (மூக்குப் பகுதியில் பிறப்பவை): ங், ஞ், ண், ந், ம், ன்.</p>
+                </div>
+                <div class="p-3 bg-blue-950/20 rounded-xl border border-blue-500/20">
+                  <h3 class="font-bold text-blue-400 mb-1 font-tamil-title text-sm">இடையினம் (6 மெய்கள்)</h3>
+                  <p class="text-neutral-400">இடைப்பட்ட ஓசையுடையது (தொண்டைப் பகுதியில் பிறப்பவை): ய், ர், ல், வ், ழ், ள்.</p>
+                </div>
+              </div>
+
+              <div class="border-t border-emerald-950/50 pt-3">
+                <h4 class="font-semibold text-neutral-200 mb-1">உதாரண சேர்க்கைகள்:</h4>
+                <ul class="list-disc list-inside space-y-1 text-neutral-400 font-tamil text-xs">
+                  <li><span class="text-amber-400 font-bold">த்</span> ஐ அழுத்தவும் + பின்னர் <span class="text-amber-400 font-bold">அ</span> ஐ அழுத்தவும் ➔ <span class="text-emerald-400 font-bold">த</span></li>
+                  <li><span class="text-amber-400 font-bold">ம்</span> ஐ அழுத்தவும் + பின்னர் <span class="text-amber-400 font-bold">இ</span> ஐ அழுத்தவும் ➔ <span class="text-emerald-400 font-bold">மி</span></li>
+                  <li>இப்போது எளிமையாக வார்த்தைகளை உருவாக்கத் தொடங்கவும்!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Custom Notification/Toast UI instead of browser Alert -->
+    <div id="customToast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-emerald-800 text-white py-3 px-5 rounded-2xl shadow-2xl flex items-center gap-3 font-sans-custom border border-emerald-500/30">
+      <i data-lucide="info" class="w-5 h-5 text-amber-400"></i>
+      <span id="toastMessage">செயல் நிறைவடைந்தது!</span>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="max-w-7xl w-full mx-auto mt-8 pt-4 border-t border-emerald-950/40 text-center text-xs text-neutral-500 font-sans-custom">
+      <p>© 2026 Tamil Generative Keyboard. Geometrically balanced natural linguistics jewel engine.</p>
+    </footer>
+
+  </div>
+
+  <!-- JavaScript State & Interactivity Engine -->
+  <script>
+    // -----------------------------------------------------
+    // Data Definitions (Phonetics and Linguistics mapping)
+    // -----------------------------------------------------
+    const VOWELS = [
+      { char: 'அ', translit: 'a', ipa: 'ʌ', name: 'அகரம் (Short A)' },
+      { char: 'ஆ', translit: 'aa', ipa: 'ɑː', name: 'ஆகாரம் (Long A)' },
+      { char: 'இ', translit: 'i', ipa: 'i', name: 'இகரம் (Short I)' },
+      { char: 'ஈ', translit: 'ee', ipa: 'iː', name: 'ஈகாரம் (Long I)' },
+      { char: 'உ', translit: 'u', ipa: 'u', name: 'உகரம் (Short U)' },
+      { char: 'ஊ', translit: 'oo', ipa: 'uː', name: 'ஊகாரம் (Long U)' },
+      { char: 'எ', translit: 'e', ipa: 'e', name: 'எகரம் (Short E)' },
+      { char: 'ஏ', translit: 'ee', ipa: 'eː', name: 'ஏகாரம் (Long E)' },
+      { char: 'ஐ', translit: 'ai', ipa: 'ʌi', name: 'ஐகாரம் (Diphthong)' },
+      { char: 'ஒ', translit: 'o', ipa: 'o', name: 'ஒகரம் (Short O)' },
+      { char: 'ஓ', translit: 'oo', ipa: 'oː', name: 'ஓகாரம் (Long O)' },
+      { char: 'ஔ', translit: 'au', ipa: 'ʌu', name: 'ஔகாரம் (Diphthong)' }
+    ];
+
+    const VALLINAM = [
+      { char: 'க்', base: 'க', modifier: 'ா', translit: 'ik / ka', name: 'வல்லினம் - க்' },
+      { char: 'ச்', base: 'ச', modifier: 'ா', translit: 'ich / cha', name: 'வல்லினம் - ச்' },
+      { char: 'ட்', base: 'ட', modifier: 'ா', translit: 'it / ta', name: 'வல்லினம் - ட்' },
+      { char: 'த்', base: 'த', modifier: 'ா', translit: 'ith / tha', name: 'வல்லினம் - த்' },
+      { char: 'ப்', base: 'ப', modifier: 'ா', translit: 'ip / pa', name: 'வல்லினம் - ப்' },
+      { char: 'ற்', base: 'ற', modifier: 'ா', translit: 'itru / ra', name: 'வல்லினம் - ற்' }
+    ];
+
+    const MELLINAM = [
+      { char: 'ங்', base: 'ங', modifier: 'ா', translit: 'ing / nga', name: 'மெல்லினம் - ங்' },
+      { char: 'ஞ்', base: 'inj / nja', modifier: 'ா', translit: 'inj / nja', name: 'மெல்லினம் - ஞ்' },
+      { char: 'ண்', base: 'ண்', modifier: 'ா', translit: 'inn / nna', name: 'மெல்லினம் - ண்' },
+      { char: 'ந்', base: 'ந', modifier: 'ா', translit: 'inth / ntha', name: 'மெல்லினம் - ந்' },
+      { char: 'ம்', base: 'ம', modifier: 'ா', translit: 'im / ma', name: 'மெல்லினம் - ம்' },
+      { char: 'ன்', base: 'ன', modifier: 'ா', translit: 'in / na', name: 'மெல்லினம் - ன்' }
+    ];
+
+    const IDAIYINAM = [
+      { char: 'ய்', base: 'ய', modifier: 'ா', translit: 'iy / ya', name: 'இடையினம் - ய்' },
+      { char: 'ர்', base: 'ர', modifier: 'ா', translit: 'ir / ra', name: 'இடையினம் - ர்' },
+      { char: 'ல்', base: 'ல', modifier: 'ா', translit: 'il / la', name: 'இடையினம் - ல்' },
+      { char: 'வ்', base: 'வ', modifier: 'ா', translit: 'iv / va', name: 'இடையினம் - வ்' },
+      { char: 'ழ்', base: 'ழ', modifier: 'ா', translit: 'izh / zha', name: 'இடையினம் - ழ்' },
+      { char: 'ள்', base: 'ள', modifier: 'ா', translit: 'ilh / lha', name: 'இடையினம் - ள்' }
+    ];
+
+    const VOWEL_TO_MODIFIER = {
+      'அ': '',
+      'ஆ': 'ா',
+      'இ': 'ி',
+      'ஈ': 'ீ',
+      'உ': 'ு',
+      'ஊ': 'ூ',
+      'எ': 'ெ',
+      'ஏ': 'ே',
+      'ஐ': 'ை',
+      'ஒ': 'ொ',
+      'ஓ': 'ோ',
+      'ஔ': 'ௌ'
+    };
+
+    // -----------------------------------------------------
+    // Theme Colors Definition (Faceted gemstone matching)
+    // -----------------------------------------------------
+    const THEME_GEMS = {
+      emerald: {
+        darkBg: 'radial-gradient(circle, #022c22 0%, #010f0a 100%)',
+        textColor: '#e6f4ea',
+        primaryBezel: '#fbbf24', // golden bezel
+        lineColor: '#d97706',
+        panelBg: 'bg-emerald-950/30',
+        panelBorder: 'border-emerald-500/20',
+        gemStops: ['#6ee7b7', '#059669', '#047857', '#022c22'],
+        glowColor: '#10b981'
+      },
+      sapphire: {
+        darkBg: 'radial-gradient(circle, #172554 0%, #020617 100%)',
+        textColor: '#eff6ff',
+        primaryBezel: '#d1d5db', // platinum bezel
+        lineColor: '#3b82f6',
+        panelBg: 'bg-blue-950/30',
+        panelBorder: 'border-blue-500/20',
+        gemStops: ['#93c5fd', '#2563eb', '#1d4ed8', '#172554'],
+        glowColor: '#3b82f6'
+      },
+      ruby: {
+        darkBg: 'radial-gradient(circle, #450a0a 0%, #0c0202 100%)',
+        textColor: '#fef2f2',
+        primaryBezel: '#fcd34d', // rose-gold bezel
+        lineColor: '#dc2626',
+        panelBg: 'bg-red-950/30',
+        panelBorder: 'border-red-500/20',
+        gemStops: ['#fca5a5', '#dc2626', '#b91c1c', '#450a0a'],
+        glowColor: '#ef4444'
+      }
+    };
+
+    // -----------------------------------------------------
+    // Application State Management
+    // -----------------------------------------------------
+    let text = "";
+    let cursorPosition = 0;
+    let showGeometry = true;
+    let theme = "emerald"; // emerald, sapphire, ruby
+    let soundEnabled = true;
+    let typingHistory = [];
+    let fontSize = 28;
+    let activeTab = "diagram"; // diagram, guide
+    let audioContext = null;
+
+    // DOM References
+    const appContainer = document.getElementById('appContainer');
+    const tamilTextarea = document.getElementById('tamilTextarea');
+    const undoBtn = document.getElementById('undoBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const backspaceBtn = document.getElementById('backspaceBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+    const fontPlusBtn = document.getElementById('fontPlusBtn');
+    const fontMinusBtn = document.getElementById('fontMinusBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundText = document.getElementById('soundText');
+    const themeEmeraldBtn = document.getElementById('themeEmeraldBtn');
+    const themeSapphireBtn = document.getElementById('themeSapphireBtn');
+    const themeRubyBtn = document.getElementById('themeRubyBtn');
+    const tabDiagramBtn = document.getElementById('tabDiagramBtn');
+    const tabGuideBtn = document.getElementById('tabGuideBtn');
+    const diagramView = document.getElementById('diagramView');
+    const guideView = document.getElementById('guideView');
+    const toggleGeometryLinesBtn = document.getElementById('toggleGeometryLinesBtn');
+    const toggleLinesIcon = document.getElementById('toggleLinesIcon');
+    const toggleLinesText = document.getElementById('toggleLinesText');
+    const keyboardSvg = document.getElementById('keyboardSvg');
+    const customToast = document.getElementById('customToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const editorPanel = document.getElementById('editorPanel');
+    const rulesPanel = document.getElementById('rulesPanel');
+    const tabContentContainer = document.getElementById('tabContentContainer');
+
+    // Geometry Calculation Params
+    const centerX = 500;
+    const centerY = 500;
+    const outerRadius = 380;
+    const innerHubs = {
+      vallinam: { cx: 500, cy: 300, r: 120, label: 'வல்லினம்', color: '#EF4444', list: VALLINAM, bg: 'rgba(239, 68, 68, 0.04)' },
+      mellinam: { cx: 330, cy: 620, r: 120, label: 'மெல்லினம்', color: '#10B981', list: MELLINAM, bg: 'rgba(16, 185, 129, 0.04)' },
+      idaiyinam: { cx: 670, cy: 620, r: 120, label: 'இடையினம்', color: '#3B82F6', list: IDAIYINAM, bg: 'rgba(59, 130, 246, 0.04)' }
+    };
+
+    // -----------------------------------------------------
+    // Synthesized Sound (Double oscillator metallic pings)
+    // -----------------------------------------------------
+    function playClickSound(frequency = 750, duration = 0.12) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        
+        // High quality dual-oscillator sound modeling crystal/metallic pings
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        // Sine wave for basic frequency response
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(frequency * 0.4, audioContext.currentTime + duration);
+
+        // Triangle wave on overtone to give jewel-like glass resonance
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(frequency * 2.04, audioContext.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(frequency * 0.1, audioContext.currentTime + duration);
+
+        // Exponential volume decay for crystalline feel
+        gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(audioContext.currentTime + duration);
+        osc2.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.warn("Audio system unsupported or blocked.");
+      }
+    }
+
+    // -----------------------------------------------------
+    // Custom Jewel-Themed Toast Notification System
+    // -----------------------------------------------------
+    function showNotification(msg, isError = false) {
+      toastMessage.textContent = msg;
+      if (isError) {
+        customToast.classList.remove('bg-emerald-800', 'border-emerald-500/30');
+        customToast.classList.add('bg-red-950/90', 'border-red-500/30', 'text-red-300');
+      } else {
+        customToast.classList.remove('bg-red-950/90', 'border-red-500/30', 'text-red-300');
+        customToast.classList.add('bg-emerald-950/90', 'border-emerald-500/30', 'text-emerald-300');
+      }
+      customToast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+      customToast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        customToast.classList.remove('translate-y-0', 'opacity-100');
+        customToast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    // -----------------------------------------------------
+    // Core Generative Linguistics Keyboard Logic
+    // -----------------------------------------------------
+    function handleInputChar(clickedChar, isVowel = false) {
+      typingHistory.push(text);
+      updateUndoButtonState();
+
+      const start = tamilTextarea.selectionStart;
+      const end = tamilTextarea.selectionEnd;
+      const before = text.substring(0, start);
+      const after = text.substring(end);
+
+      let updatedBefore = before;
+      let finalCursorPos = start;
+
+      if (isVowel) {
+        // Generative Rule: Consonant with Pulli (்) + Vowel = Uyirmei
+        if (before.length > 0) {
+          const lastChar = before.slice(-1); 
+          const secondLastChar = before.length > 1 ? before.slice(-2, -1) : '';
+
+          if (lastChar === '்' && secondLastChar) {
+            const modSymbol = VOWEL_TO_MODIFIER[clickedChar];
+            // Replace the Pulli with the correct vowel modifier symbol
+            updatedBefore = before.slice(0, -1) + modSymbol;
+          } else {
+            updatedBefore = before + clickedChar;
+          }
+        } else {
+          updatedBefore = before + clickedChar;
+        }
+      } else {
+        updatedBefore = before + clickedChar;
+      }
+
+      text = updatedBefore + after;
+      tamilTextarea.value = text;
+      finalCursorPos = updatedBefore.length;
+      
+      // Keep focus on the textarea naturally
+      tamilTextarea.focus();
+      tamilTextarea.setSelectionRange(finalCursorPos, finalCursorPos);
+      
+      updateActionButtonStates();
+    }
+
+    // Backspace Processing
+    function handleBackspace() {
+      playClickSound(450, 0.12);
+      typingHistory.push(text);
+      updateUndoButtonState();
+
+      const start = tamilTextarea.selectionStart;
+      const end = tamilTextarea.selectionEnd;
+
+      if (start === end) {
+        if (start > 0) {
+          const before = text.substring(0, start);
+          const after = text.substring(end);
+          const updatedBefore = before.slice(0, -1);
+          
+          text = updatedBefore + after;
+          tamilTextarea.value = text;
+          
+          const newCursor = updatedBefore.length;
+          tamilTextarea.focus();
+          tamilTextarea.setSelectionRange(newCursor, newCursor);
+        }
+      } else {
+        const before = text.substring(0, start);
+        const after = text.substring(end);
+        
+        text = before + after;
+        tamilTextarea.value = text;
+        
+        tamilTextarea.focus();
+        tamilTextarea.setSelectionRange(start, start);
+      }
+      updateActionButtonStates();
+    }
+
+    // Undo Processing
+    function handleUndo() {
+      if (typingHistory.length > 0) {
+        playClickSound(520, 0.15);
+        text = typingHistory.pop();
+        tamilTextarea.value = text;
+        const length = text.length;
+        tamilTextarea.focus();
+        tamilTextarea.setSelectionRange(length, length);
+        updateActionButtonStates();
+        updateUndoButtonState();
+      }
+    }
+
+    // Clear Screen
+    function handleClear() {
+      playClickSound(300, 0.2);
+      typingHistory.push(text);
+      updateUndoButtonState();
+      text = "";
+      tamilTextarea.value = "";
+      tamilTextarea.focus();
+      updateActionButtonStates();
+    }
+
+    // Dynamic State Refresh
+    function updateActionButtonStates() {
+      const empty = text.length === 0;
+      backspaceBtn.disabled = empty;
+      speakBtn.disabled = empty;
+
+      // Class styles adjusted dynamically
+      if (empty) {
+        backspaceBtn.classList.add('text-neutral-600', 'cursor-not-allowed');
+        backspaceBtn.classList.remove('text-neutral-200', 'hover:bg-neutral-800/80');
+
+        speakBtn.classList.add('bg-neutral-900', 'text-neutral-500', 'border-neutral-800', 'cursor-not-allowed');
+        speakBtn.classList.remove('bg-amber-500/10', 'hover:bg-amber-500/20', 'text-amber-500', 'border-amber-500/20');
+      } else {
+        backspaceBtn.classList.remove('text-neutral-600', 'cursor-not-allowed');
+        backspaceBtn.classList.add('text-neutral-200', 'hover:bg-neutral-800/80');
+
+        speakBtn.classList.remove('bg-neutral-900', 'text-neutral-500', 'border-neutral-800', 'cursor-not-allowed');
+        speakBtn.classList.add('bg-amber-500/10', 'hover:bg-amber-500/20', 'text-amber-500', 'border-amber-500/20');
+      }
+    }
+
+    function updateUndoButtonState() {
+      if (typingHistory.length === 0) {
+        undoBtn.disabled = true;
+        undoBtn.classList.add('text-neutral-600', 'cursor-not-allowed');
+        undoBtn.classList.remove('text-neutral-200', 'hover:bg-neutral-800/80');
+      } else {
+        undoBtn.disabled = false;
+        undoBtn.classList.remove('text-neutral-600', 'cursor-not-allowed');
+        undoBtn.classList.add('text-neutral-200', 'hover:bg-neutral-800/80');
+      }
+    }
+
+    // -----------------------------------------------------
+    // System Theme Application
+    // -----------------------------------------------------
+    function applyTheme(newTheme) {
+      theme = newTheme;
+      const tConf = THEME_GEMS[theme];
+
+      // Update interactive HTML elements & dynamic background
+      document.body.style.background = tConf.darkBg;
+      document.body.style.color = tConf.textColor;
+
+      // Update button highlights to showcase premium selections
+      themeEmeraldBtn.className = "px-3 py-1.5 text-xs rounded-lg transition-all " + (theme === 'emerald' ? 'bg-gradient-to-r from-emerald-800 to-emerald-950 text-emerald-300 border border-emerald-500/30 font-medium' : 'text-neutral-400 hover:text-neutral-200');
+      themeSapphireBtn.className = "px-3 py-1.5 text-xs rounded-lg transition-all " + (theme === 'sapphire' ? 'bg-gradient-to-r from-blue-800 to-blue-950 text-blue-300 border border-blue-500/30 font-medium' : 'text-neutral-400 hover:text-neutral-200');
+      themeRubyBtn.className = "px-3 py-1.5 text-xs rounded-lg transition-all " + (theme === 'ruby' ? 'bg-gradient-to-r from-red-800 to-red-950 text-red-300 border border-red-500/30 font-medium' : 'text-neutral-400 hover:text-neutral-200');
+
+      // Card element styles to blend beautifully with jewel background
+      editorPanel.className = `p-5 rounded-3xl border transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col theme-transition ${tConf.panelBg} ${tConf.panelBorder}`;
+      rulesPanel.className = `p-5 rounded-3xl border transition-all theme-transition shadow-[0_5px_20px_rgba(0,0,0,0.3)] ${tConf.panelBg} ${tConf.panelBorder}`;
+      diagramView.className = `p-4 rounded-3xl border transition-all flex flex-col items-center relative theme-transition shadow-[0_15px_40px_rgba(0,0,0,0.6)] ${tConf.panelBg} ${tConf.panelBorder}`;
+      guideView.className = `p-6 rounded-3xl border transition-all leading-relaxed theme-transition shadow-[0_15px_40px_rgba(0,0,0,0.6)] ${tConf.panelBg} ${tConf.panelBorder}`;
+
+      // Update SVG definitions
+      const gemG = document.getElementById('gemGradient');
+      if (gemG) {
+        gemG.innerHTML = `
+          <stop offset="0%" stop-color="${tConf.gemStops[0]}" />
+          <stop offset="40%" stop-color="${tConf.gemStops[1]}" />
+          <stop offset="85%" stop-color="${tConf.gemStops[2]}" />
+          <stop offset="100%" stop-color="${tConf.gemStops[3]}" />
+        `;
+      }
+
+      // Re-render whole SVG space to adjust stroke lines and jewel highlights
+      renderKeyboard();
+    }
+
+    // -----------------------------------------------------
+    // Dynamic Brooch SVG Render Architecture
+    // -----------------------------------------------------
+    function renderKeyboard() {
+      // Clear dynamically generated SVG nodes
+      while (keyboardSvg.lastChild && keyboardSvg.lastChild.id !== 'shadow' && keyboardSvg.lastChild.id !== 'hubGlow' && keyboardSvg.lastChild.nodeName !== 'defs') {
+        keyboardSvg.removeChild(keyboardSvg.lastChild);
+      }
+
+      const tConf = THEME_GEMS[theme];
+
+      // 1. Render Sacred Geometry overlay lines
+      if (showGeometry) {
+        const geometryGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        geometryGroup.setAttribute("class", "opacity-30 transition-opacity duration-300 pointer-events-none");
+
+        // Golden Ratio spiral matching image_e062ff.jpg's internal circular swirl
+        const spiral = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        spiral.setAttribute("d", "M 500 500 A 10 10 0 0 1 500 510 A 20 20 0 0 1 480 500 A 40 40 0 0 1 500 460 A 80 80 0 0 1 580 500 A 160 160 0 0 1 500 660 A 320 320 0 0 1 180 500 A 640 640 0 0 1 500 -140");
+        spiral.setAttribute("fill", "none");
+        spiral.setAttribute("stroke", tConf.primaryBezel);
+        spiral.setAttribute("stroke-width", "1.5");
+        spiral.setAttribute("stroke-dasharray", "4,6");
+        geometryGroup.appendChild(spiral);
+
+        // Concentric circular golden alignment tracks
+        [outerRadius, outerRadius * 0.618, outerRadius * 0.618 * 0.618].forEach((r, idx) => {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", "500");
+          circle.setAttribute("cy", "500");
+          circle.setAttribute("r", r);
+          circle.setAttribute("fill", "none");
+          circle.setAttribute("stroke", tConf.primaryBezel);
+          circle.setAttribute("stroke-width", idx === 1 ? "1.5" : "1");
+          circle.setAttribute("stroke-opacity", idx === 1 ? "0.4" : "0.2");
+          geometryGroup.appendChild(circle);
+        });
+
+        // Rays connecting outer ring to center
+        VOWELS.forEach((item, i) => {
+          const angle = ((i * 30 - 90) * Math.PI) / 180;
+          const x = centerX + outerRadius * Math.cos(angle);
+          const y = centerY + outerRadius * Math.sin(angle);
+
+          const ray = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          ray.setAttribute("x1", "500");
+          ray.setAttribute("y1", "500");
+          ray.setAttribute("x2", x);
+          ray.setAttribute("y2", y);
+          ray.setAttribute("stroke", tConf.primaryBezel);
+          ray.setAttribute("stroke-width", "0.5");
+          ray.setAttribute("stroke-opacity", "0.2");
+          geometryGroup.appendChild(ray);
+        });
+
+        keyboardSvg.appendChild(geometryGroup);
+      }
+
+      // ----------------------------------------------------------------------------------------------------------------------
+      // BROOCH MASTERPIECE ADAPTATION: Outer Gold Ring Filigree & Curved Jewel Border Segments (Inspired by image_e057c0.jpg)
+      // ----------------------------------------------------------------------------------------------------------------------
+      const ornamentalGoldGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+      // Outer solid luxury gold rim track enclosing the brooch segments
+      const absoluteOuterTrack = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      absoluteOuterTrack.setAttribute("cx", "500");
+      absoluteOuterTrack.setAttribute("cy", "500");
+      absoluteOuterTrack.setAttribute("r", "462");
+      absoluteOuterTrack.setAttribute("fill", "none");
+      absoluteOuterTrack.setAttribute("stroke", "url(#goldGradient)");
+      absoluteOuterTrack.setAttribute("stroke-width", "5.5");
+      absoluteOuterTrack.setAttribute("filter", "url(#shadow)");
+      ornamentalGoldGroup.appendChild(absoluteOuterTrack);
+
+      // Outer gold beaded dotted ring (adds jewelry elegance)
+      const beadedTrack = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      beadedTrack.setAttribute("cx", "500");
+      beadedTrack.setAttribute("cy", "500");
+      beadedTrack.setAttribute("r", "452");
+      beadedTrack.setAttribute("fill", "none");
+      beadedTrack.setAttribute("stroke", "url(#goldGradient)");
+      beadedTrack.setAttribute("stroke-width", "2.5");
+      beadedTrack.setAttribute("stroke-dasharray", "1.5, 6");
+      ornamentalGoldGroup.appendChild(beadedTrack);
+
+      // Inner base golden frame enclosing the vowels cluster
+      const internalBaseFrame = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      internalBaseFrame.setAttribute("cx", "500");
+      internalBaseFrame.setAttribute("cy", "500");
+      internalBaseFrame.setAttribute("r", "318");
+      internalBaseFrame.setAttribute("fill", "none");
+      internalBaseFrame.setAttribute("stroke", "url(#goldGradient)");
+      internalBaseFrame.setAttribute("stroke-width", "4.5");
+      ornamentalGoldGroup.appendChild(internalBaseFrame);
+
+      // Generate 12 Outer Curved Gemstone Segments directly representing the green gemstone tiles in image_e057c0.jpg
+      VOWELS.forEach((_, i) => {
+        // Find segment start and end angle ranges (leaving small structural gold clasp gaps)
+        const angleStartDeg = (i * 30 - 90) + 7.5;
+        const angleEndDeg = ((i + 1) * 30 - 90) - 7.5;
+
+        const radStart = (angleStartDeg * Math.PI) / 180;
+        const radEnd = (angleEndDeg * Math.PI) / 180;
+
+        const segRadius = 438;
+        
+        // Arc Coordinates
+        const x1 = centerX + segRadius * Math.cos(radStart);
+        const y1 = centerY + segRadius * Math.sin(radStart);
+        const x2 = centerX + segRadius * Math.cos(radEnd);
+        const y2 = centerY + segRadius * Math.sin(radEnd);
+
+        // Core 3D Gemstone Arc Segment
+        const gemArc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        gemArc.setAttribute("d", `M ${x1} ${y1} A ${segRadius} ${segRadius} 0 0 1 ${x2} ${y2}`);
+        gemArc.setAttribute("fill", "none");
+        gemArc.setAttribute("stroke", "url(#gemGradient)");
+        gemArc.setAttribute("stroke-width", "16");
+        gemArc.setAttribute("stroke-linecap", "butt");
+        gemArc.setAttribute("filter", "url(#shadow)");
+        ornamentalGoldGroup.appendChild(gemArc);
+
+        // Gold Bezels outlining the Gemstone segment
+        const innerBezelArc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        innerBezelArc.setAttribute("d", `M ${centerX + (segRadius-8) * Math.cos(radStart)} ${centerY + (segRadius-8) * Math.sin(radStart)} A ${segRadius-8} ${segRadius-8} 0 0 1 ${centerX + (segRadius-8) * Math.cos(radEnd)} ${centerY + (segRadius-8) * Math.sin(radEnd)}`);
+        innerBezelArc.setAttribute("fill", "none");
+        innerBezelArc.setAttribute("stroke", "url(#goldGradient)");
+        innerBezelArc.setAttribute("stroke-width", "2");
+        ornamentalGoldGroup.appendChild(innerBezelArc);
+
+        const outerBezelArc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        outerBezelArc.setAttribute("d", `M ${centerX + (segRadius+8) * Math.cos(radStart)} ${centerY + (segRadius+8) * Math.sin(radStart)} A ${segRadius+8} ${segRadius+8} 0 0 1 ${centerX + (segRadius+8) * Math.cos(radEnd)} ${centerY + (segRadius+8) * Math.sin(radEnd)}`);
+        outerBezelArc.setAttribute("fill", "none");
+        outerBezelArc.setAttribute("stroke", "url(#goldGradient)");
+        outerBezelArc.setAttribute("stroke-width", "2");
+        ornamentalGoldGroup.appendChild(outerBezelArc);
+
+        // Ornamental Gold Clasps & Hinges (holding the segment arcs like real brooch claws)
+        [radStart, radEnd].forEach(radAngle => {
+          const cx = centerX + segRadius * Math.cos(radAngle);
+          const cy = centerY + segRadius * Math.sin(radAngle);
+
+          // Hinged rectangular clasp plate
+          const clasp = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          clasp.setAttribute("x", cx - 5);
+          clasp.setAttribute("y", cy - 10);
+          clasp.setAttribute("width", "10");
+          clasp.setAttribute("height", "20");
+          clasp.setAttribute("rx", "2.5");
+          clasp.setAttribute("transform", `rotate(${(radAngle * 180 / Math.PI) + 90}, ${cx}, ${cy})`);
+          clasp.setAttribute("fill", "url(#goldGradient)");
+          clasp.setAttribute("stroke", "#78350f");
+          clasp.setAttribute("stroke-width", "1");
+          ornamentalGoldGroup.appendChild(clasp);
+
+          // Small diamond rivet bead on top of the clasp
+          const rivet = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          rivet.setAttribute("cx", cx);
+          rivet.setAttribute("cy", cy);
+          rivet.setAttribute("r", "2.5");
+          rivet.setAttribute("fill", "#fffbeb");
+          ornamentalGoldGroup.appendChild(rivet);
+        });
+
+        // ----------------------------------------------------------------------------------
+        // Inner Golden Crown Spikes (Sunburst Spokes pointing outwards from inner rim)
+        // ----------------------------------------------------------------------------------
+        // At Vowel Center Ray Angle (Aligns with each vowel key center)
+        const vowelAngleRad = ((i * 30 - 90) * Math.PI) / 180;
+        
+        // Gothic leaf design spike extending from r=318 to r=350
+        const tipX = centerX + 346 * Math.cos(vowelAngleRad);
+        const tipY = centerY + 346 * Math.sin(vowelAngleRad);
+        
+        const baseX1 = centerX + 318 * Math.cos(vowelAngleRad - 0.08);
+        const baseY1 = centerY + 318 * Math.sin(vowelAngleRad - 0.08);
+        
+        const baseX2 = centerX + 318 * Math.cos(vowelAngleRad + 0.08);
+        const baseY2 = centerY + 318 * Math.sin(vowelAngleRad + 0.08);
+
+        const leafSpike = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        leafSpike.setAttribute("d", `M ${baseX1} ${baseY1} Q ${centerX + 332 * Math.cos(vowelAngleRad - 0.03)} ${centerY + 332 * Math.sin(vowelAngleRad - 0.03)} ${tipX} ${tipY} Q ${centerX + 332 * Math.cos(vowelAngleRad + 0.03)} ${centerY + 332 * Math.sin(vowelAngleRad + 0.03)} ${baseX2} ${baseY2} Z`);
+        leafSpike.setAttribute("fill", "url(#goldGradient)");
+        leafSpike.setAttribute("stroke", "#78350f");
+        leafSpike.setAttribute("stroke-width", "0.75");
+        ornamentalGoldGroup.appendChild(leafSpike);
+
+        // At Vowel Midpoint Angle (Between vowels, pointing outwards with gothic fleur-de-lis points)
+        const midAngleRad = (((i * 30 - 75) - 90) * Math.PI) / 180;
+        const midTipX = centerX + 358 * Math.cos(midAngleRad);
+        const midTipY = centerY + 358 * Math.sin(midAngleRad);
+        
+        const midBaseX1 = centerX + 318 * Math.cos(midAngleRad - 0.09);
+        const midBaseY1 = centerY + 318 * Math.sin(midAngleRad - 0.09);
+        const midBaseX2 = centerX + 318 * Math.cos(midAngleRad + 0.09);
+        const midBaseY2 = centerY + 318 * Math.sin(midAngleRad + 0.09);
+
+        const midSpike = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        midSpike.setAttribute("d", `M ${midBaseX1} ${midBaseY1} C ${centerX + 342 * Math.cos(midAngleRad - 0.05)} ${centerY + 342 * Math.sin(midAngleRad - 0.05)} ${centerX + 330 * Math.cos(midAngleRad - 0.12)} ${centerY + 330 * Math.sin(midAngleRad - 0.12)} ${midTipX} ${midTipY} C ${centerX + 330 * Math.cos(midAngleRad + 0.12)} ${centerY + 330 * Math.sin(midAngleRad + 0.12)} ${centerX + 342 * Math.cos(midAngleRad + 0.05)} ${centerY + 342 * Math.sin(midAngleRad + 0.05)} ${midBaseX2} ${midBaseY2} Z`);
+        midSpike.setAttribute("fill", "url(#goldGradient)");
+        midSpike.setAttribute("stroke", "#78350f");
+        midSpike.setAttribute("stroke-width", "0.75");
+        ornamentalGoldGroup.appendChild(midSpike);
+
+        // Little gold sphere beads embedded in mid-spikes
+        const midBead = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        midBead.setAttribute("cx", centerX + 336 * Math.cos(midAngleRad));
+        midBead.setAttribute("cy", centerY + 336 * Math.sin(midAngleRad));
+        midBead.setAttribute("r", "4.5");
+        midBead.setAttribute("fill", "#fffbeb");
+        midBead.setAttribute("filter", "url(#shadow)");
+        ornamentalGoldGroup.appendChild(midBead);
+      });
+
+      keyboardSvg.appendChild(ornamentalGoldGroup);
+
+      // 2. Render Outer Vowels Ring (Faceted gems in golden claw bezels)
+      const vowelsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+      VOWELS.forEach((item, i) => {
+        const angle = ((i * 30 - 90) * Math.PI) / 180;
+        const x = centerX + outerRadius * Math.cos(angle);
+        const y = centerY + outerRadius * Math.sin(angle);
+
+        const nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        nodeGroup.setAttribute("class", "cursor-pointer group");
+        nodeGroup.setAttribute("style", "pointer-events: all;");
+        nodeGroup.addEventListener("click", () => {
+          playClickSound(650 + (i * 25), 0.12);
+          handleInputChar(item.char, true);
+        });
+
+        // Jewel Golden Frame bezel
+        const outerFrame = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        outerFrame.setAttribute("cx", x);
+        outerFrame.setAttribute("cy", y);
+        outerFrame.setAttribute("r", "44");
+        outerFrame.setAttribute("fill", "url(#goldGradient)");
+        outerFrame.setAttribute("filter", "url(#shadow)");
+        outerFrame.setAttribute("class", "transition-transform duration-200 hover:scale-110");
+        nodeGroup.appendChild(outerFrame);
+
+        // Core Faceted Gem (using radial gem gradient)
+        const gem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        gem.setAttribute("cx", x);
+        gem.setAttribute("cy", y);
+        gem.setAttribute("r", "38");
+        gem.setAttribute("fill", "url(#gemGradient)");
+        nodeGroup.appendChild(gem);
+
+        // Gemstone Facet Cuts (Geometrical inner overlays simulating diamond cut refractions)
+        const facets = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        facets.setAttribute("d", `
+          M ${x} ${y - 38} L ${x + 15} ${y - 15} L ${x + 38} ${y} L ${x + 15} ${y + 15} L ${x} ${y + 38} L ${x - 15} ${y + 15} L ${x - 38} ${y} L ${x - 15} ${y - 15} Z
+          M ${x} ${y - 38} L ${x} ${y - 15} M ${x + 38} ${y} L ${x + 15} ${y} M ${x} ${y + 38} L ${x} ${y + 15} M ${x - 38} ${y} L ${x - 15} ${y}
+        `);
+        facets.setAttribute("fill", "none");
+        facets.setAttribute("stroke", "white");
+        facets.setAttribute("stroke-width", "0.75");
+        facets.setAttribute("stroke-opacity", "0.25");
+        nodeGroup.appendChild(facets);
+
+        // Golden prong Settings holding the jewel (claw shapes in corners)
+        const prongs = [45, 135, 225, 315];
+        prongs.forEach(pAngle => {
+          const rad = (pAngle * Math.PI) / 180;
+          const px = x + 41 * Math.cos(rad);
+          const py = y + 41 * Math.sin(rad);
+          const prong = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          prong.setAttribute("cx", px);
+          prong.setAttribute("cy", py);
+          prong.setAttribute("r", "5.5");
+          prong.setAttribute("fill", "url(#goldGradient)");
+          nodeGroup.appendChild(prong);
+        });
+
+        // Click active area buffer
+        const buffer = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        buffer.setAttribute("cx", x);
+        buffer.setAttribute("cy", y);
+        buffer.setAttribute("r", "52");
+        buffer.setAttribute("fill", "transparent");
+        nodeGroup.appendChild(buffer);
+
+        // Tamil Character Label (High legible gold/cream text)
+        const textLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        textLabel.setAttribute("x", x);
+        textLabel.setAttribute("y", y);
+        textLabel.setAttribute("dy", "10");
+        textLabel.setAttribute("text-anchor", "middle");
+        textLabel.setAttribute("font-size", "30");
+        textLabel.setAttribute("font-weight", "800");
+        textLabel.setAttribute("fill", "#fffbeb");
+        textLabel.setAttribute("class", "font-tamil select-none transition-colors duration-200 group-hover:fill-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]");
+        textLabel.textContent = item.char;
+        nodeGroup.appendChild(textLabel);
+
+        // Pronunciation Index Subtitle
+        const indexLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        indexLabel.setAttribute("x", x);
+        indexLabel.setAttribute("y", y - 19);
+        indexLabel.setAttribute("text-anchor", "middle");
+        indexLabel.setAttribute("font-size", "9");
+        indexLabel.setAttribute("font-family", "monospace");
+        indexLabel.setAttribute("fill", "#fbbf24");
+        indexLabel.setAttribute("class", "opacity-80 font-bold select-none");
+        indexLabel.textContent = item.translit;
+        nodeGroup.appendChild(indexLabel);
+
+        vowelsGroup.appendChild(nodeGroup);
+      });
+
+      keyboardSvg.appendChild(vowelsGroup);
+
+      // 3. Render Inner Consonant Hubs (Vallinam, Mellinam, Idaiyinam)
+      Object.entries(innerHubs).forEach(([key, hub]) => {
+        const hubGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+        // STARBURST Spikes behind centers matching the Golden filigree of Brooch
+        const starBurst = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        starBurst.setAttribute("d", `
+          M ${hub.cx} ${hub.cy - hub.r - 20} Q ${hub.cx} ${hub.cy} ${hub.cx + 25} ${hub.cy}
+          Q ${hub.cx} ${hub.cy} ${hub.cx + hub.r + 20} ${hub.cy} Q ${hub.cx} ${hub.cy} ${hub.cx} ${hub.cy + hub.r + 20}
+          Q ${hub.cx} ${hub.cy} ${hub.cx - 25} ${hub.cy} Q ${hub.cx} ${hub.cy} ${hub.cx - hub.r - 20} ${hub.cy}
+          Q ${hub.cx} ${hub.cy} ${hub.cx} ${hub.cy - hub.r - 20}
+        `);
+        starBurst.setAttribute("fill", "none");
+        starBurst.setAttribute("stroke", "url(#goldGradient)");
+        starBurst.setAttribute("stroke-width", "2.5");
+        hubGroup.appendChild(starBurst);
+
+        // Central medallion golden rings
+        const ringLine1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ringLine1.setAttribute("cx", hub.cx);
+        ringLine1.setAttribute("cy", hub.cy);
+        ringLine1.setAttribute("r", hub.r + 8);
+        ringLine1.setAttribute("fill", "none");
+        ringLine1.setAttribute("stroke", tConf.primaryBezel);
+        ringLine1.setAttribute("stroke-width", "1.5");
+        ringLine1.setAttribute("stroke-opacity", "0.6");
+        hubGroup.appendChild(ringLine1);
+
+        const centerRing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        centerRing.setAttribute("cx", hub.cx);
+        centerRing.setAttribute("cy", hub.cy);
+        centerRing.setAttribute("r", hub.r);
+        centerRing.setAttribute("fill", "rgba(0, 0, 0, 0.4)");
+        centerRing.setAttribute("stroke", hub.color);
+        centerRing.setAttribute("stroke-width", "2");
+        centerRing.setAttribute("stroke-dasharray", "4,4");
+        centerRing.setAttribute("filter", "url(#shadow)");
+        hubGroup.appendChild(centerRing);
+
+        // Central Golden Plate
+        const centerPlate = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        centerPlate.setAttribute("cx", hub.cx);
+        centerPlate.setAttribute("cy", hub.cy);
+        centerPlate.setAttribute("r", "34");
+        centerPlate.setAttribute("fill", "url(#goldGradient)");
+        centerPlate.setAttribute("filter", "url(#shadow)");
+        hubGroup.appendChild(centerPlate);
+
+        // Central Plate Text
+        const titleText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        titleText.setAttribute("x", hub.cx);
+        titleText.setAttribute("y", hub.cy);
+        titleText.setAttribute("dy", "5");
+        titleText.setAttribute("text-anchor", "middle");
+        titleText.setAttribute("font-size", "13");
+        titleText.setAttribute("font-weight", "900");
+        titleText.setAttribute("fill", "#2b1a04");
+        titleText.setAttribute("class", "font-tamil-title tracking-tight select-none");
+        titleText.textContent = hub.label;
+        hubGroup.appendChild(titleText);
+
+        const subTitleText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        subTitleText.setAttribute("x", hub.cx);
+        subTitleText.setAttribute("y", hub.cy + 17);
+        subTitleText.setAttribute("text-anchor", "middle");
+        subTitleText.setAttribute("font-size", "7.5");
+        subTitleText.setAttribute("font-weight", "bold");
+        subTitleText.setAttribute("fill", "#78350f");
+        subTitleText.setAttribute("class", "font-sans-custom select-none");
+        subTitleText.textContent = "6 GEMS";
+        hubGroup.appendChild(subTitleText);
+
+        // Orbiting Consonant keys inside the cluster
+        hub.list.forEach((subNode, idx) => {
+          const angle = ((idx * 60 - 90) * Math.PI) / 180;
+          const x = hub.cx + (hub.r * 0.65) * Math.cos(angle);
+          const y = hub.cy + (hub.r * 0.65) * Math.sin(angle);
+
+          const subNodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          subNodeGroup.setAttribute("class", "cursor-pointer group");
+          subNodeGroup.setAttribute("style", "pointer-events: all;");
+          subNodeGroup.addEventListener("click", () => {
+            playClickSound(400 + (idx * 40), 0.12);
+            handleInputChar(subNode.char, false);
+          });
+
+          // Jewel Consonant claw bezel
+          const bezel = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          bezel.setAttribute("cx", x);
+          bezel.setAttribute("cy", y);
+          bezel.setAttribute("r", "29");
+          bezel.setAttribute("fill", "url(#goldGradient)");
+          bezel.setAttribute("filter", "url(#shadow)");
+          subNodeGroup.appendChild(bezel);
+
+          // Faceted Gem background
+          const gem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          gem.setAttribute("cx", x);
+          gem.setAttribute("cy", y);
+          gem.setAttribute("r", "24");
+          gem.setAttribute("fill", "url(#gemGradient)");
+          subNodeGroup.appendChild(gem);
+
+          // Inner facet lines
+          const cuts = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          cuts.setAttribute("d", `M ${x} ${y - 24} L ${x + 10} ${y - 10} L ${x + 24} ${y} L ${x + 10} ${y + 10} L ${x} ${y + 24} L ${x - 10} ${y + 10} L ${x - 24} ${y} L ${x - 10} ${y - 10} Z`);
+          cuts.setAttribute("fill", "none");
+          cuts.setAttribute("stroke", "white");
+          cuts.setAttribute("stroke-width", "0.5");
+          cuts.setAttribute("stroke-opacity", "0.2");
+          subNodeGroup.appendChild(cuts);
+
+          // Consonant Prongs
+          [45, 135, 225, 315].forEach(pAngle => {
+            const rad = (pAngle * Math.PI) / 180;
+            const px = x + 26 * Math.cos(rad);
+            const py = y + 26 * Math.sin(rad);
+            const prong = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            prong.setAttribute("cx", px);
+            prong.setAttribute("cy", py);
+            prong.setAttribute("r", "3.5");
+            prong.setAttribute("fill", "url(#goldGradient)");
+            subNodeGroup.appendChild(prong);
+          });
+
+          // Buffer click area
+          const buffer = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          buffer.setAttribute("cx", x);
+          buffer.setAttribute("cy", y);
+          buffer.setAttribute("r", "34");
+          buffer.setAttribute("fill", "transparent");
+          subNodeGroup.appendChild(buffer);
+
+          // Glyph Label
+          const glyphText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          glyphText.setAttribute("x", x);
+          glyphText.setAttribute("y", y);
+          glyphText.setAttribute("dy", "8");
+          glyphText.setAttribute("text-anchor", "middle");
+          glyphText.setAttribute("font-size", "22");
+          glyphText.setAttribute("font-weight", "900");
+          glyphText.setAttribute("fill", "#fffbeb");
+          glyphText.setAttribute("class", "font-tamil select-none group-hover:fill-amber-300 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.8)]");
+          glyphText.textContent = subNode.char;
+          subNodeGroup.appendChild(glyphText);
+
+          hubGroup.appendChild(subNodeGroup);
+        });
+
+        keyboardSvg.appendChild(hubGroup);
+      });
+    }
+
+    // -----------------------------------------------------
+    // Interactivity Controls mapping
+    // -----------------------------------------------------
+    
+    tamilTextarea.addEventListener('input', (e) => {
+      text = e.target.value;
+      updateActionButtonStates();
+    });
+
+    tamilTextarea.addEventListener('select', (e) => {
+      cursorPosition = e.target.selectionStart;
+    });
+
+    // Font Controls
+    fontPlusBtn.addEventListener('click', () => {
+      if (fontSize < 48) {
+        fontSize += 4;
+        tamilTextarea.style.fontSize = `${fontSize}px`;
+        fontSizeDisplay.textContent = `${fontSize}px`;
+        playClickSound(800, 0.08);
+      }
+    });
+
+    fontMinusBtn.addEventListener('click', () => {
+      if (fontSize > 16) {
+        fontSize -= 4;
+        tamilTextarea.style.fontSize = `${fontSize}px`;
+        fontSizeDisplay.textContent = `${fontSize}px`;
+        playClickSound(700, 0.08);
+      }
+    });
+
+    // Core keys controls
+    backspaceBtn.addEventListener('click', handleBackspace);
+    undoBtn.addEventListener('click', handleUndo);
+    clearBtn.addEventListener('click', handleClear);
+
+    // Keystroke Sound FX control
+    soundToggleBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      playClickSound(900, 0.1);
+      
+      if (soundEnabled) {
+        soundToggleBtn.className = "p-2.5 rounded-xl border text-xs flex items-center gap-1.5 transition-all bg-emerald-950/40 text-emerald-400 border-emerald-500/20 hover:border-emerald-400";
+        soundText.textContent = "ஒலி இயக்கம் (Chimes On)";
+      } else {
+        soundToggleBtn.className = "p-2.5 rounded-xl border text-xs flex items-center gap-1.5 transition-all bg-neutral-900 text-neutral-400 border-neutral-800 hover:border-neutral-700";
+        soundText.textContent = "ஒலி நிறுத்தம் (Muted)";
+      }
+    });
+
+    // Theme selector click mappings
+    themeEmeraldBtn.addEventListener('click', () => { playClickSound(750, 0.12); applyTheme('emerald'); });
+    themeSapphireBtn.addEventListener('click', () => { playClickSound(850, 0.12); applyTheme('sapphire'); });
+    themeRubyBtn.addEventListener('click', () => { playClickSound(950, 0.12); applyTheme('ruby'); });
+
+    // Tab Navigation toggles
+    tabDiagramBtn.addEventListener('click', () => {
+      playClickSound(700, 0.1);
+      activeTab = "diagram";
+      
+      tabDiagramBtn.className = "flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-amber-500 to-amber-600 text-emerald-950 shadow-[0_4px_15px_rgba(245,158,11,0.2)]";
+      tabGuideBtn.className = "flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all text-neutral-400 hover:text-neutral-200 hover:bg-white/5";
+      
+      diagramView.classList.remove('hidden');
+      guideView.classList.add('hidden');
+    });
+
+    tabGuideBtn.addEventListener('click', () => {
+      playClickSound(800, 0.1);
+      activeTab = "guide";
+      
+      tabGuideBtn.className = "flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-amber-500 to-amber-600 text-emerald-950 shadow-[0_4px_15px_rgba(245,158,11,0.2)]";
+      tabDiagramBtn.className = "flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all text-neutral-400 hover:text-neutral-200 hover:bg-white/5";
+      
+      guideView.classList.remove('hidden');
+      diagramView.classList.add('hidden');
+    });
+
+    // Toggle geometry overlay alignment lines
+    toggleGeometryLinesBtn.addEventListener('click', () => {
+      showGeometry = !showGeometry;
+      playClickSound(600, 0.08);
+      
+      if (showGeometry) {
+        toggleGeometryLinesBtn.className = "p-2 rounded-xl text-xs flex items-center gap-1.5 border transition-all bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-400";
+        toggleLinesText.textContent = "வடிவியல் வரிகள் இயக்கம்";
+        toggleLinesIcon.setAttribute("data-lucide", "eye");
+      } else {
+        toggleGeometryLinesBtn.className = "p-2 rounded-xl text-xs flex items-center gap-1.5 border transition-all bg-neutral-900 text-neutral-400 border-neutral-800 hover:border-neutral-700";
+        toggleLinesText.textContent = "வடிவியல் வரிகள் மறை";
+        toggleLinesIcon.setAttribute("data-lucide", "eye-off");
+      }
+      lucide.createIcons();
+      renderKeyboard();
+    });
+
+    // Special Char ஃ button
+    document.getElementById('specialCharBtn').addEventListener('click', () => {
+      playClickSound(700, 0.12);
+      handleInputChar('ஃ', false);
+    });
+
+    // Clipboard copy action
+    copyBtn.addEventListener('click', () => {
+      playClickSound(850, 0.15);
+      
+      if (!text) {
+        showNotification("எழுத்துக்கள் எதுவும் இல்லை!", true);
+        return;
+      }
+
+      try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        
+        showNotification("மரகதக் கலைப்படைப்பு நகலெடுக்கப்பட்டது! (Copied to Clipboard)");
+      } catch (e) {
+        showNotification("நகலெடுப்பதில் சிக்கல் ஏற்பட்டது.", true);
+      }
+    });
+
+    // Speech synthesis audio pronouncer
+    speakBtn.addEventListener('click', () => {
+      playClickSound(950, 0.2);
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ta-IN';
+        window.speechSynthesis.speak(utterance);
+      } else {
+        showNotification("உங்களது உலாவி ஒலிப்பதிவு அமைப்பை ஆதரிக்கவில்லை.", true);
+      }
+    });
+
+    // Initializer
+    window.onload = function() {
+      lucide.createIcons();
+      applyTheme('emerald');
+      updateActionButtonStates();
+    };
+  </script>
+</body>
+</html>
