@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thirukkural Flower - Interactive Phyllotaxis Universe</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            950: '#040d04',
+                            900: '#0b1d0a',
+                            800: '#112e0f',
+                            700: '#1b4719',
+                            600: '#276124',
+                            500: '#387c35',
+                        },
+                        gold: {
+                            100: '#fef9c3',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar styling for a premium dark look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1d0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1b4719;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ca8a04;
+        }
+        .canvas-container {
+            cursor: grab;
+        }
+        .canvas-container:active {
+            cursor: grabbing;
+        }
+        /* Fullscreen handling */
+        :-webkit-full-screen {
+            width: 100% !important;
+            height: 100% !important;
+            background-color: #040d04 !important;
+        }
+        :fullscreen {
+            width: 100% !important;
+            height: 100% !important;
+            background-color: #040d04 !important;
+        }
+    </style>
+</head>
+<body class="bg-forest-950 text-gray-100 min-h-screen flex flex-col font-sans selection:bg-gold-600 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-forest-800 bg-forest-900/80 backdrop-blur px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 z-10 sticky top-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-gold-600 to-yellow-400 flex items-center justify-center shadow-lg shadow-gold-700/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-forest-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-gold-400">THIRUKKURAL FLOWER</h1>
+                <p class="text-xs text-emerald-500/80 font-mono">முப்பால் மலர் - முப்பரிமாணக் கட்டமைப்பு (1 to 1330)</p>
+            </div>
+        </div>
+
+        <!-- Center Selection Info -->
+        <div class="flex items-center gap-3 bg-forest-950/80 px-4 py-2 rounded-full border border-forest-800 text-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse"></span>
+            <span>Total Seeds: <strong class="text-gold-400">1,330</strong></span>
+            <span class="text-forest-700">|</span>
+            <span>Angle: <strong class="text-emerald-400">137.508°</strong> (Golden Angle)</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- Interactive Canvas Viewport (Left Panel) -->
+        <div class="w-full lg:w-3/5 xl:w-2/3 flex flex-col border-r border-forest-800 bg-gradient-to-b from-forest-900 to-forest-950 p-4 relative min-h-[500px] lg:min-h-0">
+            
+            <!-- Controls Overlay -->
+            <div class="absolute top-6 left-6 z-10 flex flex-col gap-2 max-w-sm">
+                <!-- Search Box -->
+                <div class="bg-forest-900/90 backdrop-blur p-1 rounded-xl border border-forest-700 shadow-xl flex items-center">
+                    <input type="number" id="kural-search" placeholder="Search Kural (1-1330)..." min="1" max="1330" 
+                        class="bg-transparent text-white px-3 py-1.5 focus:outline-none w-44 text-sm font-medium placeholder-emerald-600/60" />
+                    <button onclick="triggerSearch()" class="bg-gold-600 hover:bg-gold-500 text-forest-950 text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow">
+                        Go
+                    </button>
+                </div>
+                
+                <!-- Quick Filter Buttons -->
+                <div class="bg-forest-900/90 backdrop-blur p-2 rounded-xl border border-forest-700 shadow-xl flex flex-wrap gap-1.5">
+                    <button onclick="setFilter('all')" id="btn-filter-all" class="filter-btn active px-3 py-1 text-xs font-semibold rounded-lg transition-all border border-transparent">
+                        Show All
+                    </button>
+                    <button onclick="setFilter('primes')" id="btn-filter-primes" class="filter-btn px-3 py-1 text-xs font-semibold rounded-lg transition-all border border-transparent flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-400"></span> Primes
+                    </button>
+                    <button onclick="setFilter('fibonacci')" id="btn-filter-fibonacci" class="filter-btn px-3 py-1 text-xs font-semibold rounded-lg transition-all border border-transparent flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Fibonacci
+                    </button>
+                    <button onclick="setFilter('intersection')" id="btn-filter-intersection" class="filter-btn px-3 py-1 text-xs font-semibold rounded-lg transition-all border border-transparent flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span> Intersections
+                    </button>
+                </div>
+
+                <!-- Color Mode Selector -->
+                <div class="bg-forest-900/90 backdrop-blur p-2 rounded-xl border border-forest-700 shadow-xl flex items-center justify-between gap-3 text-xs">
+                    <span class="text-gray-300 font-semibold pl-1">வண்ணப் பிரிவு:</span>
+                    <div class="flex gap-1">
+                        <button onclick="setColorMode('paal')" id="btn-color-paal" class="px-2.5 py-1 rounded bg-gold-600 text-forest-950 font-bold transition-all">
+                            முப்பால்
+                        </button>
+                        <button onclick="setColorMode('structure')" id="btn-color-structure" class="px-2.5 py-1 rounded bg-forest-950 text-gray-400 font-medium hover:text-white transition-all">
+                            கட்டமைப்பு
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Action Panel (Zoom, Reset, Spirals, Full Screen) -->
+            <div class="absolute top-6 right-6 z-10 flex flex-col gap-2">
+                <div class="bg-forest-900/90 backdrop-blur p-1 rounded-xl border border-forest-700 shadow-xl flex flex-col">
+                    <button onclick="zoomIn()" class="p-2.5 text-emerald-400 hover:text-gold-400 transition-colors" title="Zoom In">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    </button>
+                    <button onclick="zoomOut()" class="p-2.5 text-emerald-400 hover:text-gold-400 transition-colors border-t border-forest-800" title="Zoom Out">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+                    </button>
+                    <button onclick="resetCamera()" class="p-2.5 text-emerald-400 hover:text-gold-400 transition-colors border-t border-forest-800" title="Reset Camera">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15.89M9 11l3-3 3 3m-3-3v12"/></svg>
+                    </button>
+                </div>
+                
+                <div class="bg-forest-900/90 backdrop-blur p-1 rounded-xl border border-forest-700 shadow-xl flex flex-col items-center gap-1">
+                    <button id="toggle-spirals-btn" onclick="toggleSpirals()" class="p-2.5 text-emerald-500 hover:text-gold-400 transition-colors border-b border-forest-800/50 pb-2" title="Toggle Fibonacci Spirals">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15.89" />
+                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" stroke-dasharray="3,3" />
+                        </svg>
+                    </button>
+                    <button onclick="toggleFullScreen()" class="p-2.5 text-emerald-400 hover:text-gold-400 transition-colors pt-2" title="முழுத்திரை (Toggle Full Screen)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4h4M4 16v4h4M20 8V4h-4M20 16v4h-4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div id="canvas-wrapper" class="w-full h-full flex-1 canvas-container overflow-hidden rounded-2xl border border-forest-800 bg-forest-950/40 relative">
+                <canvas id="sunflower-canvas"></canvas>
+            </div>
+
+            <!-- Mini Legend Footer -->
+            <div class="mt-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs bg-forest-900/40 px-4 py-3 rounded-xl border border-forest-800/60">
+                <!-- Legend for Muppaal Color Mode -->
+                <div id="legend-paal" class="flex items-center gap-4 flex-wrap">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 border border-emerald-700"></span> அறத்துப்பால் / Virtue (1-380)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 border border-amber-700"></span> பொருட்பால் / Wealth (381-1080)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-pink-500 border border-pink-700"></span> காமத்துப்பால் / Love (1081-1330)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded bg-red-500 border border-white animate-pulse"></span> Key Intersections
+                    </span>
+                </div>
+                
+                <!-- Legend for Structural Color Mode (Hidden initially) -->
+                <div id="legend-structure" class="hidden flex items-center gap-4 flex-wrap">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-800 border border-amber-950"></span> Core Seeds (1-200)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-yellow-400 border border-yellow-600"></span> Outer Petals (201+)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded bg-red-500 border border-white animate-pulse"></span> Key Intersections
+                    </span>
+                </div>
+
+                <div class="text-emerald-500/80 font-mono text-center md:text-right">
+                    💡 Drag to PAN, Scroll to ZOOM. Click nodes for Wisdom.
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Panel (Right Panel) -->
+        <div class="w-full lg:w-2/5 xl:w-1/3 flex flex-col bg-forest-900 overflow-y-auto border-t lg:border-t-0 border-forest-800">
+            
+            <!-- Default Welcome Display (When no node is selected) -->
+            <div id="welcome-pane" class="p-6 md:p-8 flex flex-col h-full justify-between gap-8">
+                <div class="space-y-6">
+                    <div class="border-b border-forest-800 pb-4">
+                        <span class="text-xs font-bold tracking-wider text-gold-500 uppercase bg-gold-500/10 px-2.5 py-1 rounded-full border border-gold-500/20">The Sacred Intersection</span>
+                        <h2 class="text-2xl font-black text-white mt-3">முப்பால் மலரியல் (The Tripartite Flower)</h2>
+                        <p class="text-sm text-emerald-400 mt-1">From the One (1), all wisdom blossoms layer by layer like a golden sunflower.</p>
+                    </div>
+
+                    <!-- Muppaal Explanation Blocks -->
+                    <div class="space-y-3">
+                        <div class="bg-forest-950/40 p-4 rounded-xl border border-forest-700/60 space-y-3">
+                            <div class="flex items-center gap-2 border-b border-forest-800 pb-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                <h3 class="font-bold text-emerald-400 text-sm">1. அறத்துப்பால் (Virtue)</h3>
+                            </div>
+                            <p class="text-xs text-gray-300"><strong>எப்படி இருக்க வேண்டும் (How to Be):</strong> ஒழுக்கம், அன்பு, அறநெறி மற்றும் சுய ஒழுங்குமுறை ஆகியவற்றைப் பற்றிப் பேசுகிறது (குறள் 1-380).</p>
+                        </div>
+
+                        <div class="bg-forest-950/40 p-4 rounded-xl border border-forest-700/60 space-y-3">
+                            <div class="flex items-center gap-2 border-b border-forest-800 pb-2">
+                                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                                <h3 class="font-bold text-amber-400 text-sm">2. பொருட்பால் (Wealth & Society)</h3>
+                            </div>
+                            <p class="text-xs text-gray-300"><strong>எப்படி செயல்பட வேண்டும் (How to Act):</strong> அரசியல், சமுதாயம், நிர்வாகம், பொருளாதாரம் மற்றும் உலகியல் செயல்பாடுகளைப் பற்றிப் பேசுகிறது (குறள் 381-1080).</p>
+                        </div>
+
+                        <div class="bg-forest-950/40 p-4 rounded-xl border border-forest-700/60 space-y-3">
+                            <div class="flex items-center gap-2 border-b border-forest-800 pb-2">
+                                <span class="w-3 h-3 rounded-full bg-pink-500"></span>
+                                <h3 class="font-bold text-pink-400 text-sm">3. காமத்துப்பால் (Love)</h3>
+                            </div>
+                            <p class="text-xs text-gray-300"><strong>எப்படி உணர வேண்டும் (How to Feel):</strong> மனிதனின் அகவாழ்க்கை, தூய்மையான காதல் உணர்வுகள் மற்றும் இன்பத்தைப் பற்றிப் பேசுகிறது (குறள் 1081-1330).</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                        <div class="bg-forest-950/60 p-4 rounded-xl border border-forest-800 space-y-3">
+                            <h3 class="font-bold text-gold-400 text-xs uppercase tracking-wider">The Philosophical Pipeline (6 Intersections)</h3>
+                            <p class="text-xs text-gray-400">
+                                The intersection of prime numbers and the Fibonacci spiral sequence aligns perfectly on exactly 6 core Kurals:
+                            </p>
+                            <div class="grid grid-cols-3 gap-2 pt-1 font-mono text-center">
+                                <div onclick="selectKural(2)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">2</div>
+                                    <div class="text-[9px] opacity-80">Knowledge</div>
+                                </div>
+                                <div onclick="selectKural(3)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">3</div>
+                                    <div class="text-[9px] opacity-80">Awareness</div>
+                                </div>
+                                <div onclick="selectKural(5)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">5</div>
+                                    <div class="text-[9px] opacity-80">Light</div>
+                                </div>
+                                <div onclick="selectKural(13)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">13</div>
+                                    <div class="text-[9px] opacity-80">Sustenance</div>
+                                </div>
+                                <div onclick="selectKural(89)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">89</div>
+                                    <div class="text-[9px] opacity-80">Generosity</div>
+                                </div>
+                                <div onclick="selectKural(233)" class="cursor-pointer p-2 bg-forest-900 hover:bg-gold-500 hover:text-forest-950 rounded border border-forest-700 transition-all">
+                                    <div class="text-lg font-bold">233</div>
+                                    <div class="text-[9px] opacity-80">Legacy</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400 italic">
+                            Select any node on the sunflower disk or choose an intersection value above to load its detailed Tamil text, translation, and custom-generated moral narrative.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer note -->
+                <div class="border-t border-forest-800/60 pt-4 text-center text-xs text-emerald-500/60">
+                    Created dynamically with Gemini AI Integration
+                </div>
+            </div>
+
+            <!-- Active Content Pane (Visible when Kural is selected) -->
+            <div id="active-pane" class="hidden p-6 md:p-8 flex flex-col justify-between min-h-full gap-6">
+                <!-- Node Header Info -->
+                <div class="space-y-6">
+                    <div class="flex justify-between items-start gap-4">
+                        <div>
+                            <span class="text-xs font-bold font-mono text-emerald-400 uppercase bg-forest-950 border border-forest-800 px-3 py-1 rounded-full">
+                                KURAL <span id="lbl-kural-no">000</span>
+                            </span>
+                            <h3 id="lbl-chapter" class="text-lg font-black text-white mt-2">Chapter Info</h3>
+                            <p id="lbl-section" class="text-xs text-gold-500/80 uppercase tracking-widest font-bold">Section Info</p>
+                        </div>
+                        <button onclick="closeDetails()" class="p-1.5 bg-forest-950 hover:bg-red-500/20 rounded-lg border border-forest-800 text-gray-400 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Geometric Metadata badge cluster -->
+                    <div class="grid grid-cols-3 gap-2 bg-forest-950/60 p-3 rounded-xl border border-forest-800 text-xs font-mono">
+                        <div class="text-center border-r border-forest-800/80">
+                            <span class="text-[9px] text-gray-400 uppercase block">Prime?</span>
+                            <span id="lbl-meta-prime" class="font-bold text-gray-300">-</span>
+                        </div>
+                        <div class="text-center border-r border-forest-800/80">
+                            <span class="text-[9px] text-gray-400 uppercase block">Fibonacci?</span>
+                            <span id="lbl-meta-fib" class="font-bold text-gray-300">-</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[9px] text-gray-400 uppercase block">Intersection?</span>
+                            <span id="lbl-meta-intersect" class="font-bold text-gray-300">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Tamil Original Couplet (Thirukkural) -->
+                    <div class="bg-forest-950/40 p-5 rounded-2xl border border-forest-800 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 h-full w-1.5 bg-gradient-to-b from-gold-500 to-amber-600"></div>
+                        <div class="text-xs uppercase text-gold-500 font-bold mb-2">திருக்குறள் (Original Tamil)</div>
+                        <p id="lbl-tamil-text" class="text-base md:text-lg font-bold leading-relaxed text-yellow-100/90 whitespace-pre-line">
+                            Loading couplet...
+                        </p>
+                    </div>
+
+                    <!-- Tamil Explanation -->
+                    <div class="space-y-2">
+                        <div class="text-xs uppercase text-emerald-400 font-bold">விளக்கம் (Tamil Meaning)</div>
+                        <p id="lbl-tamil-meaning" class="text-sm text-gray-300 leading-relaxed">
+                            Loading explanation...
+                        </p>
+                    </div>
+
+                    <!-- English Translation -->
+                    <div class="space-y-2 pt-2 border-t border-forest-800/40">
+                        <div class="text-xs uppercase text-emerald-400 font-bold">English Translation</div>
+                        <blockquote id="lbl-english-translation" class="text-sm italic text-gray-300 border-l-2 border-emerald-800 pl-3">
+                            Loading translation...
+                        </blockquote>
+                    </div>
+
+                    <!-- Dynamically Generated AI Parable / Story -->
+                    <div class="pt-4 border-t border-forest-800/40 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs uppercase text-gold-500 font-black tracking-wide flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V4.804z" />
+                                </svg>
+                                ILLUSTRATIVE MORAL STORY
+                            </div>
+                            <span class="text-[10px] text-emerald-500 font-mono bg-forest-950 px-2 py-0.5 rounded border border-forest-800">Dynamic AI</span>
+                        </div>
+                        
+                        <!-- AI Loading Indicator -->
+                        <div id="story-loader" class="hidden flex flex-col items-center justify-center py-10 gap-3">
+                            <div class="w-10 h-10 border-4 border-emerald-800 border-t-gold-500 rounded-full animate-spin"></div>
+                            <span class="text-xs text-gray-400 font-mono">Drawing deep wisdom narrative...</span>
+                        </div>
+
+                        <!-- Story Content Area -->
+                        <div id="story-content" class="bg-forest-950/30 p-4 rounded-xl border border-forest-800/80 space-y-2.5">
+                            <h4 id="lbl-story-title" class="font-bold text-sm text-yellow-100">Loading dynamic story title...</h4>
+                            <p id="lbl-story-text" class="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+                                Story text loading...
+                            </p>
+                            <div id="lbl-moral-box" class="bg-gold-500/5 border border-gold-500/10 p-2.5 rounded text-[11px] text-gold-400 mt-2">
+                                <strong>Moral alignment:</strong> <span id="lbl-story-moral">Moral message</span>
+                            </div>
+                        </div>
+                        
+                        <!-- API Error Alert -->
+                        <div id="api-error" class="hidden bg-red-950/40 border border-red-800/60 p-4 rounded-xl text-center space-y-2">
+                            <p class="text-xs text-red-300">Unable to establish cloud AI connection. Try again shortly.</p>
+                            <button onclick="retryLastSelection()" class="bg-red-800 hover:bg-red-700 text-white text-[10px] font-bold px-3 py-1.5 rounded transition-colors">
+                                Retry Connection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- App State and Logic Code -->
+    <script>
+        // Global variables
+        const N = 1330;
+        const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~137.508 degrees in radians
+        
+        let points = [];
+        let zoomScale = 1.0;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let startDragX = 0;
+        let startDragY = 0;
+        let selectedKuralNum = null;
+        let hoveredKuralNum = null;
+        let currentFilter = 'all'; // 'all' | 'primes' | 'fibonacci' | 'intersection'
+        let showSpirals = false;
+        let currentColorMode = 'paal'; // 'paal' (default) | 'structure'
+        
+        const canvas = document.getElementById('sunflower-canvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvas-wrapper');
+
+        // Prime Numbers Helper
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        // Fibonacci Checker
+        const fibonacciNumbers = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597];
+        function isFibonacci(num) {
+            return fibonacciNumbers.includes(num);
+        }
+
+        // Key Intersections: Prime & Fibonacci numbers up to 1330
+        const intersections = [2, 3, 5, 13, 89, 233];
+        function isIntersection(num) {
+            return intersections.includes(num);
+        }
+
+        // Localized Offline / Fallback Database for the 6 critical Intersections to ensure flawless performance
+        const localKuralData = {
+            2: {
+                kuralNo: 2,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "கடவுள் வாழ்த்து",
+                chapterEnglish: "Praise of God",
+                tamilText: "கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nநற்றாள் தொழாஅர் எனின்.",
+                tamilMeaning: "வாலறிவனாகிய இறைவனுடைய நல்ல திருவடிகளைத் தொழுது வணங்காதவர் கற்ற கல்வியினால் உண்டான பயன் என்ன?",
+                englishTranslation: "What value has learning if it does not lead to bowing before the feet of Him who is pure intellect?",
+                storyTitle: "The Pride of Sage Hemachandra",
+                storyText: "Once, a master scholar named Hemachandra mastered all sciences, languages, and philosophies. People from distant lands traveled to receive his wisdom. However, Hemachandra was consumed by pride, treating others as inferior. One day, a wandering monk asked him a simple question: 'Now that you know the framework of everything, does it make you lighter or heavier?' Hemachandra was silent, feeling the immense weight of his ego. The monk smiled and said: 'If learning doesn't teach you to surrender to the ultimate truth with humility, you haven't learned at all; you have only memorized.' Shaken, Hemachandra realized his error, bowed to the monk, and began using his wisdom to heal and teach without expectation.",
+                moral: "Wisdom is meant to inspire humility, respect, and align ourselves with higher divine principles."
+            },
+            3: {
+                kuralNo: 3,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "கடவுள் வாழ்த்து",
+                chapterEnglish: "Praise of God",
+                tamilText: "மலர்மிசை ஏகினான் மாணடி சேர்ந்தார்\nநிலமிசை நீடுவாழ் வார்.",
+                tamilMeaning: "அன்பரின் மனமாகிய மலரில் வீற்றிருக்கும் இறைவனுடைய மாண்புற்ற திருவடிகளைப் பொருந்தி நினைக்கின்றவர், இப்புவியின் மீது நீண்ட காலம் வாழ்வர்.",
+                englishTranslation: "They who cling to the glorious feet of Him who dwells in the flower-like hearts of His devotees will live long upon this earth.",
+                storyTitle: "The Fisherman's Calm",
+                storyText: "In a coastal village of Tamil Nadu, a fisherman named Muthan faced a colossal storm that threatened to wreck his boat. While other fishermen panicked and threw their nets away, Muthan sat silently at the helm, holding the rudder firmly with deep presence. He focused his mind on the vast, supreme silence of the ocean—the ultimate force. Miraculously, a sudden change in wind pattern guided his boat around a deadly reef and straight into safety. When asked how he stayed so calm, Muthan replied: 'When you anchor your heart to the highest foundation, the storms on the surface cannot destabilize you.'",
+                moral: "Those who connect to the deepest anchor of life find stability amidst the volatile waves of existence."
+            },
+            5: {
+                kuralNo: 5,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "கடவுள் வாழ்த்து",
+                chapterEnglish: "Praise of God",
+                tamilText: "இருள்சேர் இருவினையும் சேரா இறைவன்\nபொருள்சேர் புகழ்புரிந்தார் மாட்டு.",
+                tamilMeaning: "இறைவனது மெய்ப்பொருள் விளங்கும் புகழை விரும்பிப் போற்றுகின்றவர்களிடம் அறியாமையினால் விளையும் நல்வினை தீவினை ஆகிய இருவகை வினைகளும் சேரா.",
+                englishTranslation: "The twin deeds born of darkness (ignorance) shall not cling to those who sincerely praise the true, ultimate glory of the Divine.",
+                storyTitle: "The Lamp of Amudhan",
+                storyText: "In ancient times, a village was rumored to be cursed by shadows of continuous misery. A simple farmer named Amudhan decided to seek the sacred light. He walked into the dark mountains, carrying only a single small clay lamp of truth and devotion. Every time the wind blew, he protected the flame with his bare hands. Reaching the peak, the light illuminated the dark caverns below, dispelling the fog of fear. The shadows evaporated instantly. Amudhan realized that darkness cannot exist where light resides; similarly, karma and suffering cannot dwell in a mind bathed in high truth.",
+                moral: "Ignorance and suffering cannot cling to a heart anchored in ultimate truth and righteousness."
+            },
+            13: {
+                kuralNo: 13,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "வான் சிறப்பு",
+                chapterEnglish: "The Blessing of Rain",
+                tamilText: "விண்ணின்று பொய்ப்பின் விரிநீர் வியனுலகத்து\nஉள்நின்று உடற்றும் பசி.",
+                tamilMeaning: "மழை பெய்யாமல் பொய்படுமானால், கடலால் சூழப்பட்ட இப்பேரண்டத்தில் பசி நிலைபெற்று உயிர்களை வருத்தும்.",
+                englishTranslation: "If rain fails, hunger will torment this wide world, even though it is surrounded by vast oceans of water.",
+                storyTitle: "The Great Drought of Chola Nadu",
+                storyText: "During the reign of a proud king, rains failed Chola Nadu for three straight seasons. The royal granaries were filled with grain, but the surrounding fields dried up, and people faced intense starvation. The king tried to feed everyone with stored gold and grains, but soon realized that wealth cannot replace nature's cycle. Humiliated, he walked bare-headed into the dry fields to work side-by-side with his farmers, pleading for water. As the community united in reverence for the earth and rain, clouds gathered and poured life. The king learned that life depends entirely on a delicate cosmic equilibrium, not man's storage vaults.",
+                moral: "Human societies are completely dependent on the delicate balance of ecological and natural support systems."
+            },
+            89: {
+                kuralNo: 89,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "விருந்தோம்பல்",
+                chapterEnglish: "Hospitality",
+                tamilText: "உடைமையுள் இன்மை விருந்தோம்பல் ஓம்பா\nமடமை அஃதுஎய்தார் மாட்டு.",
+                tamilMeaning: "விருந்தினர்களை உபசரிக்காத பேதைமை, செல்வம் பல உள்ள காலத்திலும் வறுமை போன்றதாகும்; அது அறிவில்லாதவர்களிடம் மட்டுமே காணப்படும்.",
+                englishTranslation: "To possess wealth but fail to offer hospitality is true poverty—a foolish lack of wisdom found only in the ignorant.",
+                storyTitle: "The Rich Man's Empty Feast",
+                storyText: "A wealthy merchant named Dhanapalan built a massive mansion and filled it with exquisite treasures. To boast of his status, he hosted an extravagant banquet, but barred a weary, dust-covered traveler from entering his gates. Years later, a devastating flood swept away all of Dhanapalan's ships and dry stock. Destitute, he wandered as a beggar. One evening, a welcoming family took him in, washed his feet, and shared their single bowl of simple porridge with him. Looking up, he realized this was the very traveler he had rejected years ago. Dhanapalan cried, realizing that his true poverty was back when he had gold but no hospitality.",
+                moral: "Generosity and sharing with others is the true measure of wealth; hoarding without charity is absolute destitution."
+            },
+            233: {
+                kuralNo: 233,
+                sectionTamil: "அறத்துப்பால் (Aram)",
+                sectionEnglish: "Virtue (Arathupal)",
+                chapterTamil: "புகழ்",
+                chapterEnglish: "Renown (Fame)",
+                tamilText: "ஒன்றா உலகத்து உயர்ந்த புகழல்லால்\nபொன்றாது நிற்பதொன் றில்.",
+                tamilMeaning: "இவ்வுலகில் அழியாமல் நிலைத்து நிற்பது, உயர்ந்த பெரும் புகழே அல்லாமல் வேறு எதுவும் இல்லை.",
+                englishTranslation: "Except for glorious renown that stands unique, there is nothing on this earth that endures forever.",
+                storyTitle: "The Bridge of Stone and Love",
+                storyText: "Two brothers inherited fortunes. The elder brother, wishing to be remembered forever, spent his wealth building a massive iron monument dedicated to himself. The younger brother used his inheritance to construct a safe, beautiful stone bridge across a dangerous river that divided two poor villages, charging absolutely no fee. Centuries passed. The iron monument rusted and collapsed into dust, forgotten by the state. But the bridge remained, loved and preserved by generations of villagers who sang songs of the younger brother's kindness. His name echoed across time, living indefinitely through service.",
+                moral: "Material gains rot and perish, but noble deeds form an immortal legacy in the hearts of humanity."
+            }
+        };
+
+        // Initialize Sunflower Math Coordinates
+        function initPhyllotaxis() {
+            points = [];
+            
+            // Adjust scaling factors based on screen dimensions to keep the sunflower perfectly framed
+            const baseScale = 11; 
+            
+            for (let i = 1; i <= N; i++) {
+                const r = Math.sqrt(i) * baseScale;
+                const theta = i * goldenAngle;
+                
+                points.push({
+                    n: i,
+                    r: r,
+                    theta: theta,
+                    x: r * Math.cos(theta),
+                    y: r * Math.sin(theta),
+                    isPrime: isPrime(i),
+                    isFib: isFibonacci(i),
+                    isIntersect: isIntersection(i)
+                });
+            }
+        }
+
+        // Fit canvas to element container size dynamically
+        function resizeCanvas() {
+            const rect = wrapper.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            draw();
+        }
+
+        // Draw coordinate grid system to Canvas
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.save();
+            // Apply panning coordinates and zoom scale transformations
+            ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
+            ctx.scale(zoomScale, zoomScale);
+
+            // 1. Draw Fibonacci Spirals if active toggle
+            if (showSpirals) {
+                drawFibonacciSpirals();
+            }
+
+            // 2. Render all 1330 Seeds/Hexagonal points
+            for (let i = 0; i < points.length; i++) {
+                const pt = points[i];
+                
+                // Determine layout node sizing based on zoom depth
+                let radius = 10;
+                if (pt.isIntersect) {
+                    radius = 14; // Highlight Intersections physically
+                }
+                
+                // Filter matching status evaluation
+                let opacity = 1.0;
+                let isFilteredOut = false;
+                
+                if (currentFilter === 'primes' && !pt.isPrime) isFilteredOut = true;
+                if (currentFilter === 'fibonacci' && !pt.isFib) isFilteredOut = true;
+                if (currentFilter === 'intersection' && !pt.isIntersect) isFilteredOut = true;
+                
+                if (isFilteredOut) {
+                    opacity = 0.15; // Dim other points significantly
+                }
+
+                ctx.save();
+                ctx.translate(pt.x, pt.y);
+                
+                // Draw hexagon path
+                ctx.beginPath();
+                for (let step = 0; step < 6; step++) {
+                    const angle = (Math.PI / 3) * step;
+                    ctx.lineTo(radius * Math.cos(angle), radius * Math.sin(angle));
+                }
+                ctx.closePath();
+                
+                // Styling colors based on chosen scheme
+                let fillColor = '#FFD700'; // Standard default
+                let strokeColor = '#ca8a04';
+                
+                if (currentColorMode === 'paal') {
+                    // MUPPAAL SCHEME
+                    if (pt.n <= 380) {
+                        // அறத்துப்பால் (Aram - Green)
+                        fillColor = '#10b981';
+                        strokeColor = '#047857';
+                    } else if (pt.n <= 1080) {
+                        // பொருட்பால் (Porul - Yellow/Amber)
+                        fillColor = '#f59e0b';
+                        strokeColor = '#b45309';
+                    } else {
+                        // காமத்துப்பால் (Kamam - Rose/Pink)
+                        fillColor = '#ec4899';
+                        strokeColor = '#be185d';
+                    }
+                } else {
+                    // CORE & PETAL LAYOUT SCHEME
+                    if (pt.n <= 200) {
+                        fillColor = '#8B4513'; // Core Dark Brown
+                        strokeColor = '#5c2d0c';
+                    } else {
+                        fillColor = '#FFD700'; // Golden Yellow Outer Petals
+                        strokeColor = '#ca8a04';
+                    }
+                }
+                
+                // Visual overrides for active status filters
+                if (currentFilter === 'primes' && pt.isPrime) {
+                    fillColor = '#3b82f6'; // Deep Ocean Blue
+                    strokeColor = '#1d4ed8';
+                } else if (currentFilter === 'fibonacci' && pt.isFib) {
+                    fillColor = '#eab308'; // Bright Gold
+                    strokeColor = '#a16207';
+                }
+
+                // Intersection gets absolute rendering prominence
+                if (pt.isIntersect) {
+                    fillColor = '#ef4444'; // Red-Coral Alert
+                    strokeColor = '#ffffff';
+                }
+                
+                // Highlight hovered/clicked nodes
+                if (pt.n === selectedKuralNum) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 18;
+                    strokeColor = '#ffffff';
+                    radius *= 1.3;
+                } else if (pt.n === hoveredKuralNum) {
+                    ctx.shadowColor = '#facc15';
+                    ctx.shadowBlur = 12;
+                    strokeColor = '#facc15';
+                }
+
+                ctx.fillStyle = fillColor;
+                ctx.globalAlpha = opacity;
+                ctx.fill();
+                
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = pt.isIntersect ? 1.8 : 0.8;
+                ctx.stroke();
+                
+                // Render Kural Numbers inside the seed if zoomed in sufficiently
+                if (zoomScale > 1.8 || pt.isIntersect) {
+                    // Set readable contrast text color inside the nodes
+                    ctx.fillStyle = '#ffffff';
+                    
+                    // Dark brown core needs distinct text color if in structure mode
+                    if (currentColorMode === 'structure' && pt.n <= 200 && !pt.isPrime && !pt.isFib && !pt.isIntersect) {
+                        ctx.fillStyle = '#FFD700';
+                    }
+                    
+                    ctx.font = `bold ${pt.isIntersect ? '5.5px' : '4px'} sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.globalAlpha = opacity;
+                    ctx.fillText(pt.n.toString(), 0, 0);
+                }
+                
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        // Draw Mathematical Spirals Overlay
+        function drawFibonacciSpirals() {
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.18)';
+            ctx.lineWidth = 1.2;
+            
+            // Draw counter-clockwise spirals
+            const numSpirals = 34; // standard sunflower parastichy
+            for (let i = 0; i < numSpirals; i++) {
+                ctx.beginPath();
+                for (let j = i; j < N; j += 21) {
+                    const pt = points[j];
+                    if (pt) {
+                        ctx.lineTo(pt.x, pt.y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        // --- Color Mode Handling ---
+        function setColorMode(mode) {
+            currentColorMode = mode;
+            
+            // Update Toggle buttons
+            const btnPaal = document.getElementById('btn-color-paal');
+            const btnStruct = document.getElementById('btn-color-structure');
+            
+            if (mode === 'paal') {
+                btnPaal.className = "px-2.5 py-1 rounded bg-gold-600 text-forest-950 font-bold transition-all";
+                btnStruct.className = "px-2.5 py-1 rounded bg-forest-950 text-gray-400 font-medium hover:text-white transition-all";
+                document.getElementById('legend-paal').classList.remove('hidden');
+                document.getElementById('legend-structure').classList.add('hidden');
+            } else {
+                btnStruct.className = "px-2.5 py-1 rounded bg-gold-600 text-forest-950 font-bold transition-all";
+                btnPaal.className = "px-2.5 py-1 rounded bg-forest-950 text-gray-400 font-medium hover:text-white transition-all";
+                document.getElementById('legend-structure').classList.remove('hidden');
+                document.getElementById('legend-paal').classList.add('hidden');
+            }
+            draw();
+        }
+
+        // --- Interaction Handlers ---
+        
+        function handleMouseDown(e) {
+            isDragging = true;
+            const rect = canvas.getBoundingClientRect();
+            startDragX = e.clientX - rect.left - offsetX;
+            startDragY = e.clientY - rect.top - offsetY;
+        }
+
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (isDragging) {
+                offsetX = mouseX - startDragX;
+                offsetY = mouseY - startDragY;
+                draw();
+            } else {
+                // Determine if hovering over any node (spatial transformation calculation)
+                const worldX = (mouseX - canvas.width / 2 - offsetX) / zoomScale;
+                const worldY = (mouseY - canvas.height / 2 - offsetY) / zoomScale;
+                
+                let foundNode = null;
+                let minDistance = 15; // Hit tolerance
+                
+                for (let i = 0; i < points.length; i++) {
+                    const pt = points[i];
+                    const dist = Math.hypot(pt.x - worldX, pt.y - worldY);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        foundNode = pt.n;
+                    }
+                }
+                
+                if (hoveredKuralNum !== foundNode) {
+                    hoveredKuralNum = foundNode;
+                    canvas.style.cursor = foundNode ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
+                    draw();
+                }
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (isDragging) {
+                isDragging = false;
+                canvas.style.cursor = hoveredKuralNum ? 'pointer' : 'grab';
+            }
+        }
+
+        // Cross-browser Fullscreen functionality
+        function toggleFullScreen() {
+            const elem = document.getElementById('canvas-wrapper');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+            // Trigger redraw after slight delay for proper rendering dimension recalculation
+            setTimeout(resizeCanvas, 150);
+        }
+
+        function handleMouseClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const worldX = (mouseX - canvas.width / 2 - offsetX) / zoomScale;
+            const worldY = (mouseY - canvas.height / 2 - offsetY) / zoomScale;
+            
+            let foundNode = null;
+            let minDistance = 15;
+            
+            for (let i = 0; i < points.length; i++) {
+                const pt = points[i];
+                const dist = Math.hypot(pt.x - worldX, pt.y - worldY);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    foundNode = pt.n;
+                }
+            }
+            
+            if (foundNode) {
+                selectKural(foundNode);
+            }
+        }
+
+        // Touch event mapping for flawless mobile support
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                const rect = canvas.getBoundingClientRect();
+                startDragX = e.touches[0].clientX - rect.left - offsetX;
+                startDragY = e.touches[0].clientY - rect.top - offsetY;
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (isDragging && e.touches.length === 1) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.touches[0].clientX - rect.left;
+                const mouseY = e.touches[0].clientY - rect.top;
+                offsetX = mouseX - startDragX;
+                offsetY = mouseY - startDragY;
+                draw();
+                e.preventDefault(); // Stop page scrolling during canvas drag
+            }
+        }
+
+        function handleTouchEnd(e) {
+            isDragging = false;
+        }
+
+        // Camera control interactions
+        function zoomIn() {
+            zoomScale = Math.min(40.0, zoomScale * 1.3);
+            draw();
+        }
+
+        function zoomOut() {
+            zoomScale = Math.max(0.4, zoomScale / 1.3);
+            draw();
+        }
+
+        function resetCamera() {
+            zoomScale = 1.0;
+            offsetX = 0;
+            offsetY = 0;
+            draw();
+        }
+
+        // Spiral overlay display handler
+        function toggleSpirals() {
+            showSpirals = !showSpirals;
+            document.getElementById('toggle-spirals-btn').classList.toggle('text-gold-400', showSpirals);
+            document.getElementById('toggle-spirals-btn').classList.toggle('text-emerald-500', !showSpirals);
+            draw();
+        }
+
+        // Search trigger binding
+        function triggerSearch() {
+            const val = parseInt(document.getElementById('kural-search').value);
+            if (val >= 1 && val <= 1330) {
+                selectKural(val);
+                // Center viewport dynamically on searched node
+                const targetNode = points[val - 1];
+                zoomScale = 3.5;
+                offsetX = -targetNode.x * zoomScale;
+                offsetY = -targetNode.y * zoomScale;
+                draw();
+            }
+        }
+
+        // Filter trigger binding
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'bg-gold-600', 'text-forest-950', 'border-gold-500'));
+            
+            let activeBtnId = 'btn-filter-all';
+            if (filterType === 'primes') activeBtnId = 'btn-filter-primes';
+            if (filterType === 'fibonacci') activeBtnId = 'btn-filter-fibonacci';
+            if (filterType === 'intersection') activeBtnId = 'btn-filter-intersection';
+            
+            const btn = document.getElementById(activeBtnId);
+            btn.classList.add('active', 'bg-gold-600', 'text-forest-950', 'border-gold-500');
+            draw();
+        }
+
+        // Display panel close handler
+        function closeDetails() {
+            selectedKuralNum = null;
+            document.getElementById('active-pane').classList.add('hidden');
+            document.getElementById('welcome-pane').classList.remove('hidden');
+            draw();
+        }
+
+        // Handle direct selections & content hydration
+        async function selectKural(kuralNum) {
+            selectedKuralNum = kuralNum;
+            draw();
+
+            // Toggle Panes
+            document.getElementById('welcome-pane').classList.add('hidden');
+            document.getElementById('active-pane').classList.remove('hidden');
+
+            // Hydrate simple geometric attributes immediately
+            document.getElementById('lbl-kural-no').textContent = kuralNum.toString().padStart(3, '0');
+            
+            const target = points[kuralNum - 1];
+            document.getElementById('lbl-meta-prime').textContent = target.isPrime ? "YES" : "NO";
+            document.getElementById('lbl-meta-prime').className = target.isPrime ? "font-bold text-blue-400" : "font-bold text-gray-500";
+            
+            document.getElementById('lbl-meta-fib').textContent = target.isFib ? "YES" : "NO";
+            document.getElementById('lbl-meta-fib').className = target.isFib ? "font-bold text-amber-400" : "font-bold text-gray-500";
+            
+            document.getElementById('lbl-meta-intersect').textContent = target.isIntersect ? "YES (★)" : "NO";
+            document.getElementById('lbl-meta-intersect').className = target.isIntersect ? "font-bold text-red-400 animate-pulse" : "font-bold text-gray-500";
+
+            // If local/offline data exists, load immediately for flawless experience
+            if (localKuralData[kuralNum]) {
+                renderKuralData(localKuralData[kuralNum]);
+            } else {
+                // Otherwise fetch dynamically using the integrated Gemini API
+                await loadKuralDetailsFromAI(kuralNum);
+            }
+        }
+
+        function renderKuralData(data) {
+            document.getElementById('story-loader').classList.add('hidden');
+            document.getElementById('api-error').classList.add('hidden');
+            document.getElementById('story-content').classList.remove('hidden');
+
+            document.getElementById('lbl-chapter').textContent = `${data.chapterTamil} (${data.chapterEnglish})`;
+            document.getElementById('lbl-section').textContent = `${data.sectionTamil} / ${data.sectionEnglish}`;
+            document.getElementById('lbl-tamil-text').textContent = data.tamilText;
+            document.getElementById('lbl-tamil-meaning').textContent = data.tamilMeaning;
+            document.getElementById('lbl-english-translation').textContent = data.englishTranslation;
+            document.getElementById('lbl-story-title').textContent = data.storyTitle;
+            document.getElementById('lbl-story-text').textContent = data.storyText;
+            document.getElementById('lbl-story-moral').textContent = data.moral;
+        }
+
+        // --- Gemini AI Dynamic Generation Code ---
+        
+        async function loadKuralDetailsFromAI(kuralNum) {
+            // Enter loading state
+            document.getElementById('story-loader').classList.remove('hidden');
+            document.getElementById('story-content').classList.add('hidden');
+            document.getElementById('api-error').classList.add('hidden');
+
+            document.getElementById('lbl-chapter').textContent = "Retrieving Wisdom...";
+            document.getElementById('lbl-section').textContent = "Connecting to Core Cloud Schema...";
+            document.getElementById('lbl-tamil-text').textContent = "திருக்குறள்...";
+            document.getElementById('lbl-tamil-meaning').textContent = "பொருள் தேடப்படுகிறது...";
+            document.getElementById('lbl-english-translation').textContent = "Formulating English rendering...";
+
+            const apiKey = ""; // Environment handles runtime Injection
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a master Tamil scholar and inspirational storyteller specializing in Thirukkural. Your goal is to output highly structured JSON conforming perfectly to the schema to provide educational assets on demand.";
+            const userPrompt = `Deliver complete metadata, native translation, and a beautifully illustrative, modern or historical moral story demonstrating the ethics of Kural number ${kuralNum}. Use appropriate Tamil text formatting (2 separate distinct lines for the original couplet).`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            kuralNo: { type: "NUMBER" },
+                            sectionTamil: { type: "STRING" },
+                            sectionEnglish: { type: "STRING" },
+                            chapterTamil: { type: "STRING" },
+                            chapterEnglish: { type: "STRING" },
+                            tamilText: { type: "STRING" },
+                            tamilMeaning: { type: "STRING" },
+                            englishTranslation: { type: "STRING" },
+                            storyTitle: { type: "STRING" },
+                            storyText: { type: "STRING" },
+                            moral: { type: "STRING" }
+                        },
+                        required: ["kuralNo", "sectionTamil", "sectionEnglish", "chapterTamil", "chapterEnglish", "tamilText", "tamilMeaning", "englishTranslation", "storyTitle", "storyText", "moral"]
+                    }
+                }
+            };
+
+            // Implement exponential backoff retry loop up to 5 times
+            let delay = 1000;
+            const maxRetries = 5;
+            let success = false;
+            let parsedData = null;
+
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error Status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (textResponse) {
+                        parsedData = JSON.parse(textResponse);
+                        success = true;
+                        break;
+                    }
+                } catch (error) {
+                    // Fail silently inside console as requested, sleep, then retry
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Exponential increase
+                }
+            }
+
+            if (success && parsedData) {
+                // Save temporarily in local memory to limit further API consumption
+                localKuralData[kuralNum] = parsedData;
+                renderKuralData(parsedData);
+            } else {
+                // Error visual display
+                document.getElementById('story-loader').classList.add('hidden');
+                document.getElementById('api-error').classList.remove('hidden');
+            }
+        }
+
+        function retryLastSelection() {
+            if (selectedKuralNum) {
+                loadKuralDetailsFromAI(selectedKuralNum);
+            }
+        }
+
+        // Bootstrap on startup
+        window.onload = function() {
+            initPhyllotaxis();
+            resizeCanvas();
+            
+            // Event bindings
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Mouse Drag & Navigation bindings
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('click', handleMouseClick);
+            
+            // Touch Navigation bindings
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd);
+            
+            // Wheel Zoom support
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = 1.1;
+                if (e.deltaY < 0) {
+                    zoomScale = Math.min(40.0, zoomScale * zoomFactor);
+                } else {
+                    zoomScale = Math.max(0.4, zoomScale / zoomFactor);
+                }
+                draw();
+            }, { passive: false });
+
+            // Keyboard search support
+            document.getElementById('kural-search').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') triggerSearch();
+            });
+
+            // Handle browser-native full screen changes to trigger canvas resizing
+            document.addEventListener('fullscreenchange', () => setTimeout(resizeCanvas, 100));
+            document.addEventListener('webkitfullscreenchange', () => setTimeout(resizeCanvas, 100));
+        };
+    </script>
+</body>
+</html>
